@@ -13,43 +13,34 @@
             <BarChart :chart-data="datacollection" :options="{ maintainAspectRatio: false }"/>
           </div>
 
-          <div>
-            <h3>Continent</h3>
-            <v-btn-toggle v-model="continent">
-              <v-btn flat value="Q15">
-                Africa
-              </v-btn>
-              <v-btn flat value="Q48">
-                Asia
-              </v-btn>
-              <v-btn flat value="Q46">
-                Europe
-              </v-btn>
-              <v-btn flat value="Q538">
-                Oceania
-              </v-btn>
-              <v-btn flat value="Q18">
-                North America
-              </v-btn>
-              <v-btn flat value="Q49">
-                South America
-              </v-btn>
-            </v-btn-toggle>
-          </div>
-          <div>
-            <h3>GDP</h3>
-            <v-btn-toggle v-model="gdp">
-              <v-btn flat value="?gdp < 5000">
-                Low
-              </v-btn>
-              <v-btn flat value="?gdp >= 5000 && ?gdp <= 10000">
-                Mid
-              </v-btn>
-              <v-btn flat value="?gdp > 10000">
-                High
-              </v-btn>
-            </v-btn-toggle>
-          </div>
+          <v-layout row wrap>
+            <v-flex xs6>
+              <v-subheader>Continent</v-subheader>
+            </v-flex>
+            <v-flex xs6>
+              <v-select
+                :items="continents"
+                v-model="continent"
+                class="input-group--focused"
+                item-value="value"
+                item-text="text"
+              ></v-select>
+            </v-flex>
+          </v-layout>
+          <v-layout row wrap>
+            <v-flex xs6>
+              <v-subheader>GDP</v-subheader>
+            </v-flex>
+            <v-flex xs6>
+              <v-select
+                :items="gdps"
+                v-model="gdp"
+                class="input-group--focused"
+                item-value="value"
+                item-text="text"
+              ></v-select>
+            </v-flex>
+          </v-layout>
           <v-btn @click="postQuery()" color="success"> Post Query </v-btn>
 
           <v-data-table
@@ -107,6 +98,19 @@ export default {
         { text: 'Official Language', value: 'langExist' },
         { text: 'Inception', value: 'inceptionExist' },
         { text: 'Completeness Percentage', value: 'completenessPercentage' }
+      ],
+      continents: [
+        {value: 'Q15', text: 'Africa'},
+        {value: 'Q48', text: 'Asia'},
+        {value: 'Q46', text: 'Europe'},
+        {value: 'Q538', text: 'Oceania'},
+        {value: 'Q49', text: 'North America'},
+        {value: 'Q18', text: 'South America'}
+      ],
+      gdps: [
+        {value: '?gdp < 5000', text: 'Low'},
+        {value: '?gdp >= 5000 && ?gdp <= 10000', text: 'Mid'},
+        {value: '?gdp > 10000', text: 'High'}
       ],
       datacollection: null
     }
