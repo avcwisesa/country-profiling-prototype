@@ -1,4 +1,3 @@
-
 module.exports = {
   /*
   ** Headers of the page
@@ -15,6 +14,13 @@ module.exports = {
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' }
     ]
   },
+  env: {
+    WIKIDATA_SPARQL_ENDPOINT: process.env.WIKIDATA_SPARQL_ENDPOINT || 'https://query.wikidata.org/',
+    githubToken: '42cdf9fd55abf41d24f34c0f8a4d9ada5f9e9b93'
+  },
+  modules: [
+    '@nuxtjs/axios'
+  ],
   plugins: ['~/plugins/vuetify.js'],
   css: [
     '~/assets/style/app.styl'

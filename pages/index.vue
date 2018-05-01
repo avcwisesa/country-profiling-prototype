@@ -5,26 +5,147 @@
         <img src="/v.png" alt="Vuetify.js" class="mb-5" />
       </div>
       <v-card>
-        <v-card-title class="headline">Welcome to the Vuetify + Nuxt.js template</v-card-title>
+        <v-card-title class="headline">Welcome!</v-card-title>
         <v-card-text>
-          <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower developers to create amazing applications.</p>
-          <p>For more information on Vuetify, check out the <a href="https://vuetifyjs.com" target="_blank">documentation</a>.</p>
-          <p>If you have questions, please join the official <a href="https://chat.vuetifyjs.com/" target="_blank" title="chat">discord</a>.</p>
-          <p>Find a bug? Report it on the github <a href="https://github.com/vuetifyjs/vuetify/issues" target="_blank" title="contribute">issue board</a>.</p>
-          <p>Thank you for developing with Vuetify and I look forward to bringing more exciting features in the future.</p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
+          <p>Country profiling as an example, with GDP per capita & continent as facet, and head of government, official language, currency, and capital for the attribute defining completeness.</p>
+
+          <div class="bar-chart">
+            <BarChart :data="barChartData" :options="{ maintainAspectRatio: false }"/>
           </div>
-          <hr class="my-3">
-          <a href="https://nuxtjs.org/" target="_blank">Nuxt Documentation</a>
-          <br>
-          <a href="https://github.com/nuxt/nuxt.js" target="_blank">Nuxt GitHub</a>
+
+          <!-- <v-text-field v-model="query"></v-text-field> -->
+          <div>
+            <h3>Continent</h3>
+            <v-btn-toggle v-model="continent">
+              <v-btn flat value="Q15">
+                Africa
+              </v-btn>
+              <v-btn flat value="Q48">
+                Asia
+              </v-btn>
+              <v-btn flat value="Q46">
+                Europe
+              </v-btn>
+              <v-btn flat value="Q538">
+                Oceania
+              </v-btn>
+              <v-btn flat value="Q18">
+                North America
+              </v-btn>
+              <v-btn flat value="Q49">
+                South America
+              </v-btn>
+            </v-btn-toggle>
+          </div>
+          <div>
+            <h3>GDP</h3>
+            <v-btn-toggle v-model="gdp">
+              <v-btn flat value="?gdp < 5000">
+                Low
+              </v-btn>
+              <v-btn flat value="?gdp >= 5000 && ?gdp <= 10000">
+                Mid
+              </v-btn>
+              <v-btn flat value="?gdp > 10000">
+                High
+              </v-btn>
+            </v-btn-toggle>
+          </div>
+          <v-btn @click="postQuery()" color="success"> Post Query </v-btn>
+          <v-btn @click="modifyChart()" color="info"> change! </v-btn>
+
+          <v-data-table
+            :headers="headers"
+            :items="countries"
+            hide-actions
+            class="elevation-1"
+          >
+            <template slot="items" slot-scope="props">
+              <td>{{ props.item.countryLabel.value }}</td>
+              <td v-if="props.item.headOfGovExist" class="text-xs-right">{{ props.item.headOfGovExist.value }}</td>
+              <td v-else class="text-xs-right">Empty</td>
+              <td v-if="props.item.capExist" class="text-xs-right">{{ props.item.capExist.value }}</td>
+              <td v-else class="text-xs-right">Empty</td>
+              <td v-if="props.item.curExist" class="text-xs-right">{{ props.item.curExist.value }}</td>
+              <td v-else class="text-xs-right">Empty</td>
+              <td v-if="props.item.langExist" class="text-xs-right">{{ props.item.langExist.value }}</td>
+              <td v-else class="text-xs-right">Empty</td>
+              <td v-if="props.item.inceptionExist" class="text-xs-right">{{ props.item.inceptionExist.value }}</td>
+              <td v-else class="text-xs-right">Empty</td>
+              <td class="text-xs-right">{{ Object.keys(props.item).length - 2 }}</td>
+            </template>
+          </v-data-table>
+
         </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" flat nuxt to="/inspire">Continue</v-btn>
-        </v-card-actions>
       </v-card>
     </v-flex>
   </v-layout>
 </template>
+
+<script>
+import BarChart from '~/components/BarChart.vue'
+
+export default {
+  fetch ({ store }) {
+    store.commit('SET_CHART_LABEL')
+  },
+  components: {
+    BarChart
+  },
+  data () {
+    return {
+      gdp: '?gdp < 5000',
+      continent: 'Q15',
+      query: '',
+      headers: [
+        {
+          text: 'Country',
+          align: 'left',
+          value: 'country'
+        },
+        { text: 'Head of Goverment', value: 'headOfGovExist' },
+        { text: 'Capital', value: 'capExist' },
+        { text: 'Currency', value: 'curExist' },
+        { text: 'Official Language', value: 'langExist' },
+        { text: 'Inception', value: 'inceptionExist' }
+      ]
+    }
+  },
+  computed: {
+    countries () {
+      return this.$store.state.countries
+    },
+    properties () {
+      return this.$store.state.properties
+    },
+    barChartData () {
+      return this.$store.state.barChartData
+    }
+  },
+  methods: {
+    postQuery () {
+      var query = `
+        SELECT ?country ?countryLabel ?headOfGovExist ?capExist ?curExist ?langExist ?inceptionExist
+        WHERE {
+        ?country wdt:P31 wd:Q6256.
+        ?country wdt:P30 wd:${this.continent}.
+        ?country wdt:P2132 ?gdp.
+        FILTER (${this.gdp})
+        OPTIONAL {BIND ("TRUE" AS ?headOfGovExist) FILTER EXISTS{?country wdt:P6 ?headOfGov}}
+        OPTIONAL {BIND ("TRUE" AS ?capExist) FILTER EXISTS{?country wdt:P36 ?cap}}
+        OPTIONAL {BIND ("TRUE" AS ?curExist) FILTER EXISTS{?country wdt:P38 ?cur}}
+        OPTIONAL {BIND ("TRUE" AS ?langExist) FILTER EXISTS{?country wdt:P37 ?lang}}
+        OPTIONAL {BIND ("TRUE" AS ?inceptionExist) FILTER EXISTS{?country wdt:P571 ?inception}}
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+        }
+      `
+      console.log(query)
+      this.$store.dispatch('POST_QUERY', query)
+    },
+    modifyChart () {
+      console.log('modify chart')
+      this.$store.commit('SET_CHART_DATA', [1, 1, 1, 1, 1])
+    }
+  }
+}
+</script>

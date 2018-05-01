@@ -11,7 +11,11 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
+    "@nuxtjs/axios": "^5.3.1",
+    "chart.js": "^2.7.2",
+    "moment": "^2.22.1",
     "nuxt": "^1.0.0",
+    "vue-chartjs": "^3.3.1",
     "vuetify": "^1.0.0"
   },
   "devDependencies": {
