@@ -5,15 +5,14 @@
         <img src="/v.png" alt="Vuetify.js" class="mb-5" />
       </div>
       <v-card>
-        <v-card-title class="headline">Welcome!</v-card-title>
+        <v-card-title class="headline">Welcome</v-card-title>
         <v-card-text>
           <p>Country profiling as an example, with GDP per capita & continent as facet, and head of government, official language, currency, and capital for the attribute defining completeness.</p>
 
           <div class="bar-chart">
-            <BarChart :data="barChartData" :options="{ maintainAspectRatio: false }"/>
+            <BarChart :chart-data="datacollection" :options="{ maintainAspectRatio: false }"/>
           </div>
 
-          <!-- <v-text-field v-model="query"></v-text-field> -->
           <div>
             <h3>Continent</h3>
             <v-btn-toggle v-model="continent">
@@ -108,7 +107,8 @@ export default {
         { text: 'Currency', value: 'curExist' },
         { text: 'Official Language', value: 'langExist' },
         { text: 'Inception', value: 'inceptionExist' }
-      ]
+      ],
+      datacollection: null
     }
   },
   computed: {
@@ -140,12 +140,38 @@ export default {
         }
       `
       console.log(query)
-      this.$store.dispatch('POST_QUERY', query)
-    },
-    modifyChart () {
-      console.log('modify chart')
-      this.$store.commit('SET_CHART_DATA', [1, 1, 1, 1, 1])
+      this.$axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
+        .then((response) => {
+          console.log(response)
+          var countries = response.data.results.bindings
+          this.$store.commit('SET_COUNTRIES', countries)
+          const reducer = function (acc, country) {
+            var exist = Object.keys(country).length - 3
+            acc[exist] = acc[exist] + 1 || 1
+            return acc
+          }
+          var acc = Array.apply(null, Array(this.properties.length)).map(Number.prototype.valueOf, 0)
+          console.log(acc)
+          var chartData = countries.reduce(reducer, acc)
+
+          this.datacollection = {
+            labels: this.properties.map((x) => `${100 * x / this.properties.length}%`),
+            datasets: [
+              {
+                label: 'Amount of countries',
+                backgroundColor: '#41b883',
+                data: chartData
+              }
+            ]
+          }
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     }
+  },
+  mounted: function () {
+    this.postQuery()
   }
 }
 </script>
