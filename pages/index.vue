@@ -70,7 +70,7 @@
               <td v-else class="text-xs-right">Empty</td>
               <td v-if="props.item.inceptionExist" class="text-xs-right">{{ props.item.inceptionExist.value }}</td>
               <td v-else class="text-xs-right">Empty</td>
-              <td class="text-xs-right">{{ Object.keys(props.item).length - 2 }}</td>
+              <td class="text-xs-right">{{ (100 * (Object.keys(props.item).length - 2) / properties.length)+'%' }}</td>
             </template>
           </v-data-table>
 
@@ -106,7 +106,7 @@ export default {
         { text: 'Currency', value: 'curExist' },
         { text: 'Official Language', value: 'langExist' },
         { text: 'Inception', value: 'inceptionExist' },
-        { text: 'Complete Properties', value: 'completeProperties' }
+        { text: 'Completeness Percentage', value: 'completenessPercentage' }
       ],
       datacollection: null
     }
