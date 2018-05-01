@@ -5,7 +5,7 @@
         <img src="/v.png" alt="Vuetify.js" class="mb-5" />
       </div>
       <v-card>
-        <v-card-title class="headline">Welcome</v-card-title>
+        <v-card-title class="headline">Country Profiling Example</v-card-title>
         <v-card-text>
           <p>Country profiling as an example, with GDP per capita & continent as facet, and head of government, official language, currency, and capital for the attribute defining completeness.</p>
 
@@ -51,7 +51,6 @@
             </v-btn-toggle>
           </div>
           <v-btn @click="postQuery()" color="success"> Post Query </v-btn>
-          <v-btn @click="modifyChart()" color="info"> change! </v-btn>
 
           <v-data-table
             :headers="headers"
@@ -106,7 +105,8 @@ export default {
         { text: 'Capital', value: 'capExist' },
         { text: 'Currency', value: 'curExist' },
         { text: 'Official Language', value: 'langExist' },
-        { text: 'Inception', value: 'inceptionExist' }
+        { text: 'Inception', value: 'inceptionExist' },
+        { text: 'Complete Properties', value: 'completeProperties' }
       ],
       datacollection: null
     }
