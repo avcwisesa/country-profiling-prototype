@@ -1,6 +1,7 @@
 export const strict = false
 export const state = () => ({
-  countries: [],
+  countries1: [],
+  countries2: [],
   properties: [1, 2, 3, 4, 5],
   error: null
 })
@@ -12,13 +13,13 @@ export const mutations = {
   SET_FAILURE (state, error) {
     state.error = error
   },
-  SET_COUNTRIES (state, countries) {
-    state.countries = countries
+  SET_COUNTRIES1 (state, countries) {
+    state.countries1 = countries
+  },
+  SET_COUNTRIES2 (state, countries) {
+    state.countries2 = countries
   }
 }
 
 export const actions = {
-  SET_CHART ({ commit }) {
-    commit('SET_CHART_LABEL')
-  }
 }
