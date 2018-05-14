@@ -10,7 +10,12 @@
           <p>Country profiling as an example, with GDP per capita & continent as facet, and head of government, official language, currency, and capital for the attribute defining completeness.</p>
 
           <div class="bar-chart">
+            <h2>Bar Chart</h2>
             <BarChart :chart-data="datacollection" :options="{ maintainAspectRatio: false }"/>
+          </div>
+          <div class="pie-chart">
+            <h2>Pie Chart</h2>
+            <PieChart :chart-data="datacollectionP" :options="{ maintainAspectRatio: false }"/>
           </div>
 
           <v-layout row wrap>
@@ -73,13 +78,12 @@
 
 <script>
 import BarChart from '~/components/BarChart.vue'
+import PieChart from '~/components/PieChart.vue'
 
 export default {
-  fetch ({ store }) {
-    store.commit('SET_CHART_LABEL')
-  },
   components: {
-    BarChart
+    BarChart,
+    PieChart
   },
   data () {
     return {
@@ -112,12 +116,13 @@ export default {
         {value: '?gdp >= 5000 && ?gdp <= 10000', text: 'Mid'},
         {value: '?gdp > 10000', text: 'High'}
       ],
-      datacollection: null
+      datacollection: null,
+      datacollectionP: null
     }
   },
   computed: {
     countries () {
-      return this.$store.state.countries
+      return this.$store.state.countries1
     },
     properties () {
       return this.$store.state.properties
@@ -148,7 +153,7 @@ export default {
         .then((response) => {
           console.log(response)
           var countries = response.data.results.bindings
-          this.$store.commit('SET_COUNTRIES', countries)
+          this.$store.commit('SET_COUNTRIES1', countries)
           const reducer = function (acc, country) {
             var exist = Object.keys(country).length - 3
             acc[exist] = acc[exist] + 1 || 1
@@ -164,6 +169,22 @@ export default {
               {
                 label: 'Amount of countries',
                 backgroundColor: '#41b883',
+                data: chartData
+              }
+            ]
+          }
+
+          this.datacollectionP = {
+            labels: this.properties.map((x) => `${100 * x / this.properties.length}%`),
+            datasets: [
+              {
+                backgroundColor: [
+                  '#f73513',
+                  '#f78513',
+                  '#f7f313',
+                  '#c1f713',
+                  '#4cf713'
+                ],
                 data: chartData
               }
             ]
