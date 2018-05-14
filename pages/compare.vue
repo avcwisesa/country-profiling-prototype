@@ -15,61 +15,89 @@
 
           <h2>Profile 1</h2>
           <v-layout row wrap>
-            <v-flex xs6>
-              <v-subheader>Continent</v-subheader>
+            <v-flex d-flex xs8>
+              <v-layout row wrap>
+                <v-flex xs6>
+                  <v-subheader>Continent</v-subheader>
+                </v-flex>
+                <v-flex xs6>
+                  <v-select
+                    :items="continents"
+                    v-model="continent1"
+                    class="input-group--focused"
+                    item-value="value"
+                    item-text="text"
+                  ></v-select>
+                </v-flex>
+                <v-flex xs6>
+                  <v-subheader>GDP</v-subheader>
+                </v-flex>
+                <v-flex xs6>
+                  <v-select
+                    :items="gdps"
+                    v-model="gdp1"
+                    class="input-group--focused"
+                    item-value="value"
+                    item-text="text"
+                  ></v-select>
+                </v-flex>
+              </v-layout>
             </v-flex>
-            <v-flex xs6>
-              <v-select
-                :items="continents"
-                v-model="continent1"
-                class="input-group--focused"
-                item-value="value"
-                item-text="text"
-              ></v-select>
-            </v-flex>
-          </v-layout>
-          <v-layout row wrap>
-            <v-flex xs6>
-              <v-subheader>GDP</v-subheader>
-            </v-flex>
-            <v-flex xs6>
-              <v-select
-                :items="gdps"
-                v-model="gdp1"
-                class="input-group--focused"
-                item-value="value"
-                item-text="text"
-              ></v-select>
+            <v-flex xs1></v-flex>
+            <v-flex xs3>
+              <v-progress-circular
+                :size="250"
+                :width="30"
+                :rotate="-90"
+                :value="score1"
+                color=blue
+              >
+                <h1> {{ score1 }}% </h1>
+              </v-progress-circular>
             </v-flex>
           </v-layout>
 
           <h2>Profile 2</h2>
           <v-layout row wrap>
-            <v-flex xs6>
-              <v-subheader>Continent</v-subheader>
+            <v-flex d-flex xs8>
+              <v-layout row wrap>
+                <v-flex xs6>
+                  <v-subheader>Continent</v-subheader>
+                </v-flex>
+                <v-flex xs6>
+                  <v-select
+                    :items="continents"
+                    v-model="continent2"
+                    class="input-group--focused"
+                    item-value="value"
+                    item-text="text"
+                  ></v-select>
+                </v-flex>
+                <v-flex xs6>
+                  <v-subheader>GDP</v-subheader>
+                </v-flex>
+                <v-flex xs6>
+                  <v-select
+                    :items="gdps"
+                    v-model="gdp2"
+                    class="input-group--focused"
+                    item-value="value"
+                    item-text="text"
+                  ></v-select>
+                </v-flex>
+              </v-layout>
             </v-flex>
-            <v-flex xs6>
-              <v-select
-                :items="continents"
-                v-model="continent2"
-                class="input-group--focused"
-                item-value="value"
-                item-text="text"
-              ></v-select>
-            </v-flex>
-          </v-layout>
-          <v-layout row wrap>
-            <v-flex xs6>
-              <v-subheader>GDP</v-subheader>
-            </v-flex>
-            <v-flex xs6>
-              <v-select
-                :items="gdps"
-                v-model="gdp2"
-                class="input-group--focused"
-                item-value="value"
-                item-text="text"
-              ></v-select>
+            <v-flex xs1></v-flex>
+            <v-flex xs3>
+              <v-progress-circular
+                :size="250"
+                :width="30"
+                :rotate="-90"
+                :value="score2"
+                color=orange
+              >
+                <h1> {{ score2 }}% </h1>
+              </v-progress-circular>
             </v-flex>
           </v-layout>
 
@@ -178,8 +206,9 @@ export default {
       ],
       datacollection: null,
       datasets: [],
-      barColor1: '#41b883',
-      barcolor2: '#9040b8'
+      barColor1: 'blue',
+      barcolor2: 'orange',
+      lorem: `Lorem ipsum dolor sit amet, mel at clita quando. Te sit oratio vituperatoribus, nam ad ipsum posidonium mediocritatem, explicari dissentiunt cu mea. Repudiare disputationi vim in, mollis iriure nec cu, alienum argumentum ius ad. Pri eu justo aeque torquatos.`
     }
   },
   computed: {
@@ -194,10 +223,16 @@ export default {
     },
     barChartData () {
       return this.$store.state.barChartData
+    },
+    score1 () {
+      return this.$store.state.score1
+    },
+    score2 () {
+      return this.$store.state.score2
     }
   },
   methods: {
-    async postQuery (continent, gdp, color, setTable) {
+    async postQuery (continent, gdp, color, setTable, setScore) {
       var query = `
         SELECT ?country ?countryLabel ?headOfGovExist ?capExist ?curExist ?langExist ?inceptionExist
         WHERE {
@@ -226,6 +261,16 @@ export default {
       console.log(acc)
       var chartData = countries.reduce(reducer, acc)
 
+      var score = 0
+      var div = 100 / chartData.length
+      chartData.forEach(function (val, i) {
+        var weight = (i + 1) * div
+        score += (weight * val)
+        console.log(weight, val)
+      })
+      score /= countries.length
+      this.$store.commit(setScore, parseFloat(score.toFixed(2)))
+
       this.datasets.push({
         label: `${continent} - ${gdp}`,
         backgroundColor: color,
@@ -234,13 +279,14 @@ export default {
     },
     async compareProfile () {
       this.datasets = []
-      await this.postQuery(this.continent1, this.gdp1, this.barColor1, 'SET_COUNTRIES1')
-      await this.postQuery(this.continent2, this.gdp2, this.barcolor2, 'SET_COUNTRIES2')
+      await this.postQuery(this.continent1, this.gdp1, this.barColor1, 'SET_COUNTRIES1', 'SET_SCORE1')
+      await this.postQuery(this.continent2, this.gdp2, this.barcolor2, 'SET_COUNTRIES2', 'SET_SCORE2')
       console.log('profile1 done')
       this.datacollection = {
         labels: this.properties.map((x) => `${100 * x / this.properties.length}%`),
         datasets: this.datasets
       }
+      console.log(this.datasets)
     }
   },
   mounted: function () {
