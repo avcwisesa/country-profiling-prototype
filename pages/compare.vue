@@ -125,11 +125,14 @@
                     <td v-else class="text-xs-right">Empty</td>
                     <td v-if="props.item.inceptionExist" class="text-xs-right">{{ props.item.inceptionExist.value }}</td>
                     <td v-else class="text-xs-right">Empty</td>
-                    <td class="text-xs-right">{{ (100 * (Object.keys(props.item).length - 2) / properties.length)+'%' }}</td>
+                    <td v-if="props.item.centralBankExist" class="text-xs-right">{{ props.item.centralBankExist.value }}</td>
+                    <td v-else class="text-xs-right">Empty</td>
+                    <td class="text-xs-right">{{ (100 * (Object.keys(props.item).length - 2) / properties.length).toFixed(2)+'%' }}</td>
                   </template>
                 </v-data-table>
               </v-card>
             </v-expansion-panel-content>
+
             <v-expansion-panel-content>
               <div slot="header">Profile 2</div>
               <v-card>
@@ -151,7 +154,9 @@
                     <td v-else class="text-xs-right">Empty</td>
                     <td v-if="props.item.inceptionExist" class="text-xs-right">{{ props.item.inceptionExist.value }}</td>
                     <td v-else class="text-xs-right">Empty</td>
-                    <td class="text-xs-right">{{ (100 * (Object.keys(props.item).length - 2) / properties.length)+'%' }}</td>
+                    <td v-if="props.item.centralBankExist" class="text-xs-right">{{ props.item.centralBankExist.value }}</td>
+                    <td v-else class="text-xs-right">Empty</td>
+                    <td class="text-xs-right">{{ (100 * (Object.keys(props.item).length - 2) / properties.length).toFixed(2)+'%' }}</td>
                   </template>
                 </v-data-table>
               </v-card>
@@ -189,6 +194,7 @@ export default {
         { text: 'Currency', value: 'curExist' },
         { text: 'Official Language', value: 'langExist' },
         { text: 'Inception', value: 'inceptionExist' },
+        { text: 'Central Bank', value: 'centralBankExist' },
         { text: 'Completeness Percentage', value: 'completenessPercentage' }
       ],
       continents: [
@@ -234,7 +240,7 @@ export default {
   methods: {
     async postQuery (continent, gdp, color, setTable, setScore) {
       var query = `
-        SELECT ?country ?countryLabel ?headOfGovExist ?capExist ?curExist ?langExist ?inceptionExist
+        SELECT ?country ?countryLabel ?headOfGovExist ?capExist ?curExist ?langExist ?inceptionExist ?centralBankExist
         WHERE {
         ?country wdt:P31 wd:Q6256.
         ?country wdt:P30 wd:${continent}.
@@ -245,6 +251,7 @@ export default {
         OPTIONAL {BIND ("TRUE" AS ?curExist) FILTER EXISTS{?country wdt:P38 ?cur}}
         OPTIONAL {BIND ("TRUE" AS ?langExist) FILTER EXISTS{?country wdt:P37 ?lang}}
         OPTIONAL {BIND ("TRUE" AS ?inceptionExist) FILTER EXISTS{?country wdt:P571 ?inception}}
+        OPTIONAL {BIND ("TRUE" AS ?centralBankExist) FILTER EXISTS{?country wdt:P1304 ?centralBank}}
         SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
         }
       `
@@ -283,7 +290,7 @@ export default {
       await this.postQuery(this.continent2, this.gdp2, this.barcolor2, 'SET_COUNTRIES2', 'SET_SCORE2')
       console.log('profile1 done')
       this.datacollection = {
-        labels: this.properties.map((x) => `${100 * x / this.properties.length}%`),
+        labels: this.properties.map((x) => `${(100 * x / this.properties.length).toFixed(2)}%`),
         datasets: this.datasets
       }
       console.log(this.datasets)

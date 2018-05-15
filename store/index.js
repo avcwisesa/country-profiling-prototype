@@ -4,7 +4,7 @@ export const state = () => ({
   score2: 0,
   countries1: [],
   countries2: [],
-  properties: [1, 2, 3, 4, 5],
+  properties: [1, 2, 3, 4, 5, 6],
   error: null
 })
 
