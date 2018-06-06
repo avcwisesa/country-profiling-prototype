@@ -1,11 +1,32 @@
 export const strict = false
 export const state = () => ({
+  class: { name: 'Country', code: 'Q6256' },
+  classElements: [],
+  facets: [{ name: 'continent', code: 'P30' }, { name: 'member of', code: 'P463' }],
+  attributes: [
+    { name: 'head of govt', code: 'P6' },
+    { name: 'capital', code: 'P36' },
+    { name: 'currency', code: 'P38' },
+    { name: 'official language', code: 'P37' },
+    { name: 'inception', code: 'P571' },
+    { name: 'central bank', code: 'P1304' }
+  ],
   score1: 0,
   score2: 0,
   countries1: [],
   countries2: [],
   properties: [1, 2, 3, 4, 5, 6],
-  error: null
+  error: null,
+  headers: [
+    { text: 'Country' },
+    { text: 'Head of Goverment' },
+    { text: 'Capital' },
+    { text: 'Currency' },
+    { text: 'Official Language' },
+    { text: 'Inception' },
+    { text: 'Central Bank' },
+    { text: 'Completeness Percentage' }
+  ]
 })
 
 export const mutations = {
