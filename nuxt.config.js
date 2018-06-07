@@ -15,6 +15,7 @@ module.exports = {
     ]
   },
   env: {
+    API_ENDPOINT: process.env.API_ENDPOINT || 'https://guarded-fjord-56608.herokuapp.com',
     WIKIDATA_SPARQL_ENDPOINT: process.env.WIKIDATA_SPARQL_ENDPOINT || 'https://query.wikidata.org/',
     githubToken: '42cdf9fd55abf41d24f34c0f8a4d9ada5f9e9b93'
   },
