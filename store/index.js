@@ -16,17 +16,7 @@ export const state = () => ({
   countries1: [],
   countries2: [],
   properties: [1, 2, 3, 4, 5, 6],
-  error: null,
-  headers: [
-    { text: 'Country' },
-    { text: 'Head of Goverment' },
-    { text: 'Capital' },
-    { text: 'Currency' },
-    { text: 'Official Language' },
-    { text: 'Inception' },
-    { text: 'Central Bank' },
-    { text: 'Completeness Percentage' }
-  ]
+  error: null
 })
 
 export const mutations = {

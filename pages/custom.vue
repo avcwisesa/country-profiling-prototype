@@ -19,7 +19,7 @@
                     <v-subheader> {{facet.name}} </v-subheader>
                 </v-flex>
                 <v-flex xs6>
-                    <v-text-field
+                    <v-text-field v-model=facetValue[facet.code]
                         class="input-group--focused"
                     ></v-text-field>
                 </v-flex>
@@ -34,19 +34,9 @@
             class="elevation-1"
           >
             <template slot="items" slot-scope="props">
-              <td>{{ props.item.countryLabel.value }}</td>
-              <td v-if="props.item.headOfGovExist" class="text-xs-right">{{ props.item.headOfGovExist.value }}</td>
+              <td v-for="attr in attributeVariables" v-bind:key="attr.code" v-if="props.item[attr]" class="text-xs-right">{{ props.item[attr].value }}</td>
               <td v-else class="text-xs-right">Empty</td>
-              <td v-if="props.item.capExist" class="text-xs-right">{{ props.item.capExist.value }}</td>
-              <td v-else class="text-xs-right">Empty</td>
-              <td v-if="props.item.curExist" class="text-xs-right">{{ props.item.curExist.value }}</td>
-              <td v-else class="text-xs-right">Empty</td>
-              <td v-if="props.item.langExist" class="text-xs-right">{{ props.item.langExist.value }}</td>
-              <td v-else class="text-xs-right">Empty</td>
-              <td v-if="props.item.inceptionExist" class="text-xs-right">{{ props.item.inceptionExist.value }}</td>
-              <td v-else class="text-xs-right">Empty</td>
-              <td v-if="props.item.centralBankExist" class="text-xs-right">{{ props.item.centralBankExist.value }}</td>
-              <td v-else class="text-xs-right">Empty</td>
+
               <td class="text-xs-right">{{ (100 * (Object.keys(props.item).length - 2) / properties.length).toFixed(2)+'%' }}</td>
             </template>
           </v-data-table>
@@ -66,23 +56,8 @@ export default {
   },
   data () {
     return {
-      gdp: '?gdp < 5000',
-      continent: 'Q15',
+      facetValue: {},
       query: '',
-      headerz: [
-        {
-          text: 'Country',
-          align: 'left',
-          value: 'country'
-        },
-        { text: 'Head of Goverment' },
-        { text: 'Capital' },
-        { text: 'Currency' },
-        { text: 'Official Language' },
-        { text: 'Inception', value: 'inceptionExist' },
-        { text: 'Central Bank', value: 'centralBankExist' },
-        { text: 'Completeness Percentage', value: 'completenessPercentage' }
-      ],
       datacollection: null
     }
   },
@@ -98,6 +73,11 @@ export default {
         return { text: obj.name }
       })
     },
+    attributeVariables () {
+      var attrs = this.$store.state.attributes
+      attrs = attrs.map(obj => obj.code + 'Exist')
+      return ['classLabel'].concat(attrs)
+    },
     properties () {
       return this.$store.state.properties
     },
@@ -106,23 +86,32 @@ export default {
     },
     facets () {
       return this.$store.state.facets
+    },
+    attributes () {
+      return this.$store.state.attributes
     }
   },
   methods: {
     postQuery () {
+      console.log(this.attributeVariables)
+      var attributeVarQuery = this.attributeVariables.reduce(function (acc, attr) {
+        return acc + ' ?' + attr
+      }, '')
+      var filterExistQuery = this.attributes.reduce(function (acc, attr) {
+        return acc + ` OPTIONAL {BIND ("TRUE" AS ?${attr.code}Exist) FILTER EXISTS{?class wdt:${attr.code} ?${attr.code}}}`
+      }, '')
+      var facetValue = this.facetValue
+      var facetQuery = this.facets.reduce(function (acc, attr) {
+        console.log(facetValue)
+        return acc + ` ?class wdt:${attr.code} wd:${facetValue[attr.code] || 'Q0'}.`
+      }, '')
+      console.log(filterExistQuery)
       var query = `
-        SELECT ?country ?countryLabel ?headOfGovExist ?capExist ?curExist ?langExist ?inceptionExist ?centralBankExist
+        SELECT ?class ${attributeVarQuery}
         WHERE {
-        ?country wdt:P31 wd:Q6256.
-        ?country wdt:P30 wd:${this.continent}.
-        ?country wdt:P2132 ?gdp.
-        FILTER (${this.gdp})
-        OPTIONAL {BIND ("TRUE" AS ?headOfGovExist) FILTER EXISTS{?country wdt:P6 ?headOfGov}}
-        OPTIONAL {BIND ("TRUE" AS ?capExist) FILTER EXISTS{?country wdt:P36 ?cap}}
-        OPTIONAL {BIND ("TRUE" AS ?curExist) FILTER EXISTS{?country wdt:P38 ?cur}}
-        OPTIONAL {BIND ("TRUE" AS ?langExist) FILTER EXISTS{?country wdt:P37 ?lang}}
-        OPTIONAL {BIND ("TRUE" AS ?inceptionExist) FILTER EXISTS{?country wdt:P571 ?inception}}
-        OPTIONAL {BIND ("TRUE" AS ?centralBankExist) FILTER EXISTS{?country wdt:P1304 ?centralBank}}
+        ?class wdt:P31 wd:Q6256.
+        ${facetQuery}
+        ${filterExistQuery}
         SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
         }
       `
@@ -132,6 +121,7 @@ export default {
           console.log(response)
           var countries = response.data.results.bindings
           this.$store.commit('SET_COUNTRIES1', countries)
+          console.log(countries)
           const reducer = function (acc, country) {
             var exist = Object.keys(country).length - 3
             acc[exist] = acc[exist] + 1 || 1
@@ -145,7 +135,7 @@ export default {
             labels: this.properties.map((x) => `${(100 * x / this.properties.length).toFixed(2)}%`),
             datasets: [
               {
-                label: 'Amount of countries',
+                label: 'Amount of class entity',
                 backgroundColor: '#41b883',
                 data: chartData
               }
