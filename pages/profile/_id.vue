@@ -5,10 +5,8 @@
         <!-- <img src="/v.png" alt="Vuetify.js" class="mb-5" /> -->
       </div>
       <v-card>
-        <v-card-title class="headline">Country Profiling Example</v-card-title>
+        <v-card-title class="headline"> {{profileName}} </v-card-title>
         <v-card-text>
-          <p>Country profiling as an example, with GDP per capita & continent as facet, and head of government, official language, currency, and capital for the attribute defining completeness.</p>
-
           <div class="bar-chart">
             <h2>Bar Chart</h2>
             <BarChart :chart-data="datacollection" :options="{ maintainAspectRatio: false }"/>
@@ -95,6 +93,9 @@ export default {
     },
     attributes () {
       return this.$store.state.attributes
+    },
+    profileName () {
+      return this.$store.state.profileName
     }
   },
   methods: {

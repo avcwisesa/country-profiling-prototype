@@ -11,7 +11,9 @@ export const state = () => ({
   countries1: [],
   countries2: [],
   properties: [1, 2, 3, 4, 5, 6],
-  error: null
+  error: null,
+  profileName: '',
+  profiles: []
 })
 
 export const mutations = {
@@ -34,6 +36,7 @@ export const mutations = {
     state.score2 = score
   },
   SET_PROFILENAME (state, name) {
+    state.profileName = name
   },
   SET_CLASS (state, classString) {
     state.class = JSON.parse(classString.replace(/name/g, '"name"').replace(/code/g, '"code"').replace(/'/g, '"'))
@@ -43,6 +46,9 @@ export const mutations = {
   },
   SET_FACETS (state, facetString) {
     state.facets = JSON.parse(facetString.replace(/name/g, '"name"').replace(/code/g, '"code"').replace(/'/g, '"'))
+  },
+  SET_PROFILES (state, profiles) {
+    state.profiles = profiles
   }
 }
 
@@ -54,6 +60,17 @@ export const actions = {
         commit('SET_CLASS', response.data.class)
         commit('SET_ATTRIBUTES', response.data.attributes)
         commit('SET_FACETS', response.data.facets)
+        commit('SET_PROFILENAME', response.data.name)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  },
+  FETCH_PROFILE ({commit, state}) {
+    console.log('fetching all profiles')
+    return axios.get(process.env.API_ENDPOINT + '/profile')
+      .then((response) => {
+        commit('SET_PROFILES', response.data)
       })
       .catch((error) => {
         console.log(error)
