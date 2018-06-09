@@ -13,6 +13,7 @@ export const state = () => ({
   properties: [1, 2, 3, 4, 5, 6],
   error: null,
   profileName: '',
+  profileClass: '',
   profiles: []
 })
 
@@ -37,6 +38,9 @@ export const mutations = {
   },
   SET_PROFILENAME (state, name) {
     state.profileName = name
+  },
+  SET_CLASSNAME (state, name) {
+    state.className = name
   },
   SET_CLASS (state, classString) {
     state.class = JSON.parse(classString.replace(/name/g, '"name"').replace(/code/g, '"code"').replace(/'/g, '"'))
@@ -73,6 +77,14 @@ export const actions = {
         commit('SET_PROFILES', response.data)
       })
       .catch((error) => {
+        console.log(error)
+      })
+  },
+  CREATE_PROFILE ({commit, state}, newProfile) {
+    return axios.post(process.env.API_ENDPOINT + '/profile/new', newProfile)
+      .then((response) => {
+        console.log(response)
+      }).catch((error) => {
         console.log(error)
       })
   }
