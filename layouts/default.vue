@@ -11,7 +11,7 @@
           router
           :to="item.to"
           :key="i"
-          v-for="(item, i) in items"
+          v-for="(item, i) in menus"
           exact
         >
           <v-list-tile-action>
@@ -21,6 +21,25 @@
             <v-list-tile-title v-text="item.title"></v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+        <v-list-group value="true">
+          <v-list-tile slot="activator">
+            <v-list-tile-title>Examples</v-list-tile-title>
+          </v-list-tile>
+          <v-list-tile
+            router
+            :to="item.to"
+            :key="i"
+            v-for="(item, i) in examples"
+            exact
+          >
+            <v-list-tile-action>
+              <v-icon v-html="item.icon"></v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title v-text="item.title"></v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list-group>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar fixed app :clipped-left="clipped">
@@ -43,9 +62,14 @@
         clipped: true,
         drawer: true,
         fixed: false,
-        items: [
-          { icon: 'apps', title: 'Single Profile', to: '/' },
-          { icon: 'bubble_chart', title: 'Profile Comparison', to: '/compare' }
+        examples: [
+          { icon: 'class', title: 'Single Profile', to: '/single' },
+          { icon: 'class', title: 'Profile Comparison', to: '/compare' }
+        ],
+        menus: [
+          { icon: 'home', title: 'Home', to: '/' },
+          { icon: 'apps', title: 'Browse', to: '/profile/browse' },
+          { icon: 'fiber_new', title: 'New Profile', to: '/profile/new' }
         ],
         miniVariant: false,
         right: true,
