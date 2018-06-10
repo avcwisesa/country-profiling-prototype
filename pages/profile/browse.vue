@@ -6,7 +6,14 @@
         <v-card-actions>
              <v-btn round @click="goTo(profile.ID)" color="green">SEE PROFILE</v-btn>
              <v-btn round disabled color="orange">EDIT</v-btn>
-            <!-- <a>{{API_ENDPOINT + 'profile/' + profile.ID}}</a> -->
+        </v-card-actions>
+      </v-card>
+    </v-flex>
+    <v-flex v-if="profiles.length == 0" xs12 sm8 md6>
+      <v-card >
+        <v-card-text>There are no existing profile. Click below to create a new one</v-card-text>
+        <v-card-actions>
+             <v-btn round @click="goToCreate()" color="green">CREATE NEW PROFILE</v-btn>
         </v-card-actions>
       </v-card>
     </v-flex>
@@ -36,6 +43,9 @@ export default {
   methods: {
     goTo (ID) {
       this.$router.push({'path': '/profile/' + ID})
+    },
+    goToCreate () {
+      this.$router.push({'path': '/profile/new'})
     }
   }
 }

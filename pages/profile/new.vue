@@ -101,6 +101,7 @@ export default {
     async createProfile () {
       console.log(this.newProfile)
       await this.$store.dispatch('CREATE_PROFILE', this.newProfile)
+      this.$router.push({'path': '/profile/browse'})
     },
     remove (data, item) {
       console.log(data)
