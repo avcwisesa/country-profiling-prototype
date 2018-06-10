@@ -43,13 +43,13 @@ export const mutations = {
     state.className = name
   },
   SET_CLASS (state, classString) {
-    state.class = JSON.parse(classString.replace(/name/g, '"name"').replace(/code/g, '"code"').replace(/'/g, '"'))
+    state.class = JSON.parse(classString)
   },
   SET_ATTRIBUTES (state, attrString) {
-    state.attributes = JSON.parse(attrString.replace(/name/g, '"name"').replace(/code/g, '"code"').replace(/'/g, '"'))
+    state.attributes = JSON.parse(attrString)
   },
   SET_FACETS (state, facetString) {
-    state.facets = JSON.parse(facetString.replace(/name/g, '"name"').replace(/code/g, '"code"').replace(/'/g, '"'))
+    state.facets = JSON.parse(facetString)
   },
   SET_PROFILES (state, profiles) {
     state.profiles = profiles
@@ -61,6 +61,7 @@ export const actions = {
     console.log('fetching2 ID: ' + id)
     return axios.get(process.env.API_ENDPOINT + '/profile/' + id)
       .then((response) => {
+        console.log(response)
         commit('SET_CLASS', response.data.class)
         commit('SET_ATTRIBUTES', response.data.attributes)
         commit('SET_FACETS', response.data.facets)

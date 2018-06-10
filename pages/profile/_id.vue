@@ -35,7 +35,7 @@
               <td v-for="attr in attributeVariables" v-bind:key="attr.code" v-if="props.item[attr]" class="text-xs-right">{{ props.item[attr].value }}</td>
               <td v-else class="text-xs-right">Empty</td>
 
-              <td class="text-xs-right">{{ (100 * (Object.keys(props.item).length - 2) / properties.length).toFixed(2)+'%' }}</td>
+              <td class="text-xs-right">{{ (100 * (Object.keys(props.item).length - 2) / attributes.length).toFixed(2)+'%' }}</td>
             </template>
           </v-data-table>
 
@@ -78,9 +78,6 @@ export default {
       var attrs = this.$store.state.attributes
       attrs = attrs.map(obj => obj.code + 'Exist')
       return ['classLabel'].concat(attrs)
-    },
-    properties () {
-      return this.$store.state.properties
     },
     barChartData () {
       return this.$store.state.barChartData
@@ -134,12 +131,12 @@ export default {
             acc[exist] = acc[exist] + 1 || 1
             return acc
           }
-          var acc = Array.apply(null, Array(this.properties.length)).map(Number.prototype.valueOf, 0)
+          var acc = Array.apply(null, Array(this.attributes.length)).map(Number.prototype.valueOf, 0)
           console.log(acc)
           var chartData = countries.reduce(reducer, acc)
 
           this.datacollection = {
-            labels: this.properties.map((x) => `${(100 * x / this.properties.length).toFixed(2)}%`),
+            labels: this.attributes.map((_, x) => `${(100 * (x + 1) / this.attributes.length).toFixed(2)}%`),
             datasets: [
               {
                 label: 'Amount of class entity',
