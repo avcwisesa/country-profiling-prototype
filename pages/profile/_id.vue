@@ -22,7 +22,7 @@
                     ></v-text-field>
                 </v-flex>
             </v-layout>
-
+          <p>{{ facetOptions }}</p>
           <v-btn @click="postQuery()" color="success"> Post Query </v-btn>
 
           <v-data-table
@@ -93,6 +93,9 @@ export default {
     },
     profileName () {
       return this.$store.state.profileName
+    },
+    facetOptions () {
+      return this.$store.state.facetOptions
     }
   },
   methods: {
