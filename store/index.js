@@ -14,7 +14,8 @@ export const state = () => ({
   error: null,
   profileName: '',
   profileClass: '',
-  profiles: []
+  profiles: [],
+  suggestedEntity: []
 })
 
 export const mutations = {
@@ -53,6 +54,9 @@ export const mutations = {
   },
   SET_PROFILES (state, profiles) {
     state.profiles = profiles
+  },
+  SET_SUGGESTION (state, suggestion) {
+    state.suggestedEntity = suggestion
   }
 }
 
@@ -85,6 +89,14 @@ export const actions = {
     return axios.post(process.env.API_ENDPOINT + '/profile/new', newProfile)
       .then((response) => {
         console.log(response)
+      }).catch((error) => {
+        console.log(error)
+      })
+  },
+  SUGGESTER ({commit, state}, { type, query }) {
+    return axios.post(process.env.WIKIDATA_API_ENDPOINT + `?action=wbsearchentities&format=json&origin=*&type=${type}&search=${query}&language=en`)
+      .then((response) => {
+        commit('SET_SUGGESTION', response.data.search)
       }).catch((error) => {
         console.log(error)
       })

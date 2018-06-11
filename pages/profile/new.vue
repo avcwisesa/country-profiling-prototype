@@ -5,58 +5,79 @@
         <v-card-title class="headline">Create new profile</v-card-title>
 
         <v-layout row wrap>
-            <v-flex xs6>
-                <v-subheader> Profile Name </v-subheader>
+            <v-flex xs3>
+                <v-subheader><h3>Profile Name</h3></v-subheader>
             </v-flex>
-            <v-flex xs4>
-                <v-text-field v-model=profileName
+            <v-flex xs7>
+                <v-text-field v-model=profileName required
                     class="input-group--focused"
                 ></v-text-field>
             </v-flex>
-            <v-flex xs6>
-                <v-subheader> Class </v-subheader>
+            <v-flex xs3>
+                <v-subheader><h3>Class</h3></v-subheader>
             </v-flex>
-            <v-flex xs4>
-                <v-text-field v-model=profileClass
-                    class="input-group--focused"
-                ></v-text-field>
+            <v-flex xs7>
+              <v-select
+                v-model="profileClass" label="Class" :items="suggestedEntity" autocomplete required
+                item-text="label" :search-input.sync="currClass"
+              ></v-select>
+            </v-flex>
+            <v-flex xs3></v-flex>
+            <v-flex xs7>
+              <div v-if="profileClass['id']">
+                Code: {{ profileClass['id'] }} <br>
+                Desc: {{ profileClass['description'] }} <br>
+              </div>
+            </v-flex>
+            <v-flex xs12><br></v-flex>
+            <v-flex xs3>
+              <v-subheader><h3>Facets</h3></v-subheader>
+            </v-flex>
+            <v-flex xs8>
+              <v-select
+                v-model="facets" label="Add facets" chips tags clearable required
+                item-text="label" :items="suggestedEntity" :search-input.sync="currFacet"
+              >
+                  <template slot="selection" slot-scope="data">
+                      <v-chip
+                      :selected="data.selected"
+                      close
+                      @input="remove(facets, data.item)"
+                      >
+                      <strong>{{ data.item['id'] }}</strong>&nbsp;
+                      <span>({{data.item['label']}})</span>
+                      </v-chip>
+                  </template>
+              </v-select>
+            </v-flex>
+            <v-flex xs3>
+              <v-subheader><h3>Attributes</h3></v-subheader>
+            </v-flex>
+            <v-flex xs8>
+              <v-select
+                v-model="attributes" label="Add attributes" chips tags clearable required
+                item-text="label" :items="suggestedEntity" :search-input.sync="currAttribute"
+              >
+                  <template slot="selection" slot-scope="data">
+                      <v-chip
+                      :selected="data.selected"
+                      close
+                      @input="remove(attributes, data.item)"
+                      >
+                      <strong>{{ data.item['id'] }}</strong>&nbsp;
+                      <span>({{data.item['label']}})</span>
+                      </v-chip>
+                  </template>
+
+              </v-select>
+            </v-flex>
+            <v-flex xs3><v-card-text></v-card-text></v-flex>
+            <v-flex xs6>
+              <v-card-actions>
+                <v-btn block round @click="createProfile()" color="blue">CREATE</v-btn>
+              </v-card-actions>
             </v-flex>
         </v-layout>
-
-        <v-card-text><h3>Facets</h3></v-card-text>
-        <v-select
-        v-model="facets" label="Add facets" chips tags solo prepend-icon="filter_list" append-icon="" clearable
-        >
-            <template slot="selection" slot-scope="data">
-                <v-chip
-                :selected="data.selected"
-                close
-                @input="remove(facets, data.item)"
-                >
-                <strong>{{ data.item }}</strong>&nbsp;
-                <span>(facet)</span>
-                </v-chip>
-            </template>
-        </v-select>
-       <v-card-text><h3>Attributes</h3></v-card-text>
-        <v-select
-        v-model="attributes" label="Add attributes" chips tags solo prepend-icon="filter_list" append-icon="" clearable
-        >
-            <template slot="selection" slot-scope="data">
-                <v-chip
-                :selected="data.selected"
-                close
-                @input="remove(attributes, data.item)"
-                >
-                <strong>{{ data.item }}</strong>&nbsp;
-                <span>(attr)</span>
-                </v-chip>
-            </template>
-        </v-select>
-        <p>{{ newProfile }}</p>
-        <v-card-actions>
-            <v-btn round @click="createProfile()" color="blue">CREATE</v-btn>
-        </v-card-actions>
       </v-card>
     </v-flex>
   </v-layout>
@@ -74,27 +95,44 @@ export default {
       profileName: '',
       profileClass: '',
       facets: [],
-      attributes: []
+      attributes: [],
+      currClass: null,
+      currFacet: '',
+      currAttribute: ''
     }
   },
   computed: {
     newProfile () {
       return {
         name: this.profileName,
-        class: JSON.stringify({ code: this.profileClass, name: this.profileClass }),
+        class: JSON.stringify({ code: this.profileClass['id'], name: this.profileClass['label'] }),
         facets: JSON.stringify(this.facets.map(obj => {
           return {
-            code: obj,
-            name: obj
+            code: obj['id'],
+            name: obj['label']
           }
         })),
         attributes: JSON.stringify(this.attributes.map(obj => {
           return {
-            code: obj,
-            name: obj
+            code: obj['id'],
+            name: obj['label']
           }
         }))
       }
+    },
+    suggestedEntity () {
+      return this.$store.state.suggestedEntity
+    }
+  },
+  watch: {
+    currAttribute (query) {
+      this.entitySuggestion('property', query)
+    },
+    currFacet (query) {
+      this.entitySuggestion('property', query)
+    },
+    currClass (query) {
+      this.entitySuggestion('item', query)
     }
   },
   methods: {
@@ -104,9 +142,11 @@ export default {
       this.$router.push({'path': '/profile/browse'})
     },
     remove (data, item) {
-      console.log(data)
       data.splice(data.indexOf(item), 1)
       data = [...data]
+    },
+    entitySuggestion (type, query) {
+      this.$store.dispatch('SUGGESTER', { type: type, query: query })
     }
   }
 }
