@@ -60,9 +60,12 @@ export const mutations = {
     state.suggestedEntity = suggestion
   },
   SET_FACET_OPTIONS (state, {facet, options}) {
-    console.log('b commit ' + facet + ' ' + options)
+    console.log('commited')
+    // console.log(options)
+    // console.log('commited2')
     state.facetOptions[facet] = options
-    console.log('after ' + state.facetOptions)
+    console.log('mutated')
+    console.log(state.facetOptions)
   }
 }
 
@@ -76,29 +79,30 @@ export const actions = {
         commit('SET_FACETS', response.data.facets)
         commit('SET_PROFILENAME', response.data.name)
 
-        console.log('state')
-        console.log(state.class)
-        console.log(state.facets)
-        state.facets.map((facet) => {
-          var query = `
-          SELECT DISTINCT ?facet ?facetLabel
-              WHERE {
-              ?entity wdt:P31 wd:${state.class.code}.
-              ?entity wdt:${facet.code} ?facet.
-              SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-              }
-          `
-          console.log(query)
-          return axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
-            .then((response) => {
-              console.log(response.data)
-              commit('SET_FACET_OPTIONS', { facet: facet.code, options: response.data.results.bindings })
-              console.log(state.facetOptions)
-            })
-            .catch((error) => {
-              console.log(error)
-            })
-        })
+        // console.log('state')
+        // console.log(state.class)
+        // console.log(state.facets)
+        // var facetOptionsResults = state.facets.map(async (facet) => {
+        //   var query = `
+        //   SELECT DISTINCT ?facet ?facetLabel ?${facet.code}
+        //       WHERE {
+        //       ?entity wdt:P31 wd:${state.class.code}.
+        //       ?entity wdt:${facet.code} ?facet.
+        //       SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+        //       }
+        //   `
+        //   console.log(query)
+        //   return axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
+        // })
+        // console.log('result')
+        // console.log(facetOptionsResults)
+        // Promise.all(facetOptionsResults).then((completed) => {
+        //   completed.map((obj) => {
+        //     console.log(obj.data.head.vars[2])
+        //     console.log(obj.data.results.bindings)
+        //     commit('SET_FACET_OPTIONS', { facet: obj.data.head.vars[2], options: obj.data.results.bindings })
+        //   })
+        // })
       })
       .catch((error) => {
         console.log(error)
@@ -122,22 +126,26 @@ export const actions = {
         console.log(error)
       })
   },
-  FETCH_FACET_OPTIONS ({commit, state}, {classCode, facetCode}) {
-    var query = `
-    SELECT DISTINCT ?facet ?facetLabel
-        WHERE {
-        ?entity wdt:P31 ${classCode}.
-        ?entity wdt:${facetCode} ?facet
-        SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-         }
-    `
-    return axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
-      .then((response) => {
-        console.log(response.data)
+  FETCH_FACET_OPTIONS ({commit, state}) {
+    var responsePromise = state.facets.map(async (facet) => {
+      var query = `
+      SELECT DISTINCT ?facet ?facetLabel ?${facet.code}
+          WHERE {
+          ?entity wdt:P31 wd:${state.class.code}.
+          ?entity wdt:${facet.code} ?facet.
+          SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+          }
+      `
+      return axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
+    })
+    console.log(responsePromise)
+
+    Promise.all(responsePromise).then((completed) => {
+      completed.map((response) => {
+        // console.log(response.data)
+        commit('SET_FACET_OPTIONS', { facet: response.data.head.vars[2], options: response.data.results.bindings })
       })
-      .catch((error) => {
-        console.log(error)
-      })
+    })
   },
   SUGGESTER ({commit, state}, { type, query }) {
     return axios.post(process.env.WIKIDATA_API_ENDPOINT + `?action=wbsearchentities&format=json&origin=*&type=${type}&search=${query}&language=en`)

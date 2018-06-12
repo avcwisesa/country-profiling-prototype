@@ -17,12 +17,11 @@
                     <v-subheader> {{facet.name}} </v-subheader>
                 </v-flex>
                 <v-flex xs6>
-                    <v-text-field v-model=facetValue[facet.code]
+                    <v-select :items="facetOptions[facet.code]" v-model=facetValue[facet.code] item-text="name" item-value="code" autocomplete
                         class="input-group--focused"
-                    ></v-text-field>
+                    ></v-select>
                 </v-flex>
             </v-layout>
-          <p>{{ facetOptions }}</p>
           <v-btn @click="postQuery()" color="success"> Post Query </v-btn>
 
           <v-data-table
@@ -51,6 +50,7 @@ import BarChart from '~/components/BarChart.vue'
 export default {
   async fetch ({ store, params }) {
     await store.dispatch('FETCH_PROFILE_BY_ID', params.id)
+    await store.dispatch('FETCH_FACET_OPTIONS')
   },
   components: {
     BarChart
@@ -59,7 +59,8 @@ export default {
     return {
       facetValue: {},
       query: '',
-      datacollection: null
+      datacollection: null,
+      facetOptionsData: {}
     }
   },
   computed: {
@@ -95,12 +96,12 @@ export default {
       return this.$store.state.profileName
     },
     facetOptions () {
-      return this.$store.state.facetOptions
+      return this.facetOptionsData
     }
   },
   methods: {
     postQuery () {
-      console.log(this.attributeVariables)
+      // console.log(this.attributeVariables)
       var attributeVarQuery = this.attributeVariables.reduce(function (acc, attr) {
         return acc + ' ?' + attr
       }, '')
@@ -109,10 +110,10 @@ export default {
       }, '')
       var facetValue = this.facetValue
       var facetQuery = this.facets.reduce(function (acc, attr) {
-        console.log(facetValue)
+        // console.log(facetValue)
         return acc + ` ?class wdt:${attr.code} wd:${facetValue[attr.code] || 'Q0'}.`
       }, '')
-      console.log(filterExistQuery)
+      // console.log(filterExistQuery)
       var query = `
         SELECT ?class ${attributeVarQuery}
         WHERE {
@@ -122,20 +123,20 @@ export default {
         SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
         }
       `
-      console.log(query)
+      // console.log(query)
       this.$axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
         .then((response) => {
-          console.log(response)
+          // console.log(response)
           var countries = response.data.results.bindings
           this.$store.commit('SET_COUNTRIES1', countries)
-          console.log(countries)
+          // console.log(countries)
           const reducer = function (acc, country) {
             var exist = Object.keys(country).length - 3
             acc[exist] = acc[exist] + 1 || 1
             return acc
           }
           var acc = Array.apply(null, Array(this.attributes.length)).map(Number.prototype.valueOf, 0)
-          console.log(acc)
+          // console.log(acc)
           var chartData = countries.reduce(reducer, acc)
 
           this.datacollection = {
@@ -152,10 +153,38 @@ export default {
         .catch((error) => {
           console.log(error)
         })
+    },
+    fillFacets () {
+      var facetOptionsResults = this.facets.map(async (facet) => {
+        var query = `
+        SELECT DISTINCT ?facet ?facetLabel ?${facet.code}
+            WHERE {
+            ?entity wdt:P31 wd:${this.class.code}.
+            ?entity wdt:${facet.code} ?facet.
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+            }
+        `
+        return this.$axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
+      })
+      Promise.all(facetOptionsResults).then((completed) => {
+        var tmp = {}
+        completed.forEach(function (response) {
+          tmp[response.data.head.vars[2]] = response.data.results.bindings.map((obj) => {
+            return {
+              code: obj['facet']['value'].split('/')[4],
+              name: obj['facetLabel']['value']
+            }
+          })
+        })
+        this.facetOptionsData = tmp
+      })
     }
   },
-  mounted: function () {
+  mounted: async function () {
+    await this.fillFacets()
     this.postQuery()
+    console.log(this.facetOptionsData)
+    this.$forceUpdate()
   }
 }
 </script>
