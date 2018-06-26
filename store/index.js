@@ -78,31 +78,6 @@ export const actions = {
         commit('SET_ATTRIBUTES', response.data.attributes)
         commit('SET_FACETS', response.data.facets)
         commit('SET_PROFILENAME', response.data.name)
-
-        // console.log('state')
-        // console.log(state.class)
-        // console.log(state.facets)
-        // var facetOptionsResults = state.facets.map(async (facet) => {
-        //   var query = `
-        //   SELECT DISTINCT ?facet ?facetLabel ?${facet.code}
-        //       WHERE {
-        //       ?entity wdt:P31 wd:${state.class.code}.
-        //       ?entity wdt:${facet.code} ?facet.
-        //       SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-        //       }
-        //   `
-        //   console.log(query)
-        //   return axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
-        // })
-        // console.log('result')
-        // console.log(facetOptionsResults)
-        // Promise.all(facetOptionsResults).then((completed) => {
-        //   completed.map((obj) => {
-        //     console.log(obj.data.head.vars[2])
-        //     console.log(obj.data.results.bindings)
-        //     commit('SET_FACET_OPTIONS', { facet: obj.data.head.vars[2], options: obj.data.results.bindings })
-        //   })
-        // })
       })
       .catch((error) => {
         console.log(error)

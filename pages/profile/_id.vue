@@ -131,16 +131,17 @@ export default {
           this.$store.commit('SET_COUNTRIES1', countries)
           // console.log(countries)
           const reducer = function (acc, country) {
-            var exist = Object.keys(country).length - 3
+            var exist = Object.keys(country).length - 2
             acc[exist] = acc[exist] + 1 || 1
             return acc
           }
-          var acc = Array.apply(null, Array(this.attributes.length)).map(Number.prototype.valueOf, 0)
+          var attributes = this.attributes.concat([''])
+          var acc = Array.apply(null, Array(attributes.length)).map(Number.prototype.valueOf, 0)
           // console.log(acc)
           var chartData = countries.reduce(reducer, acc)
-
+          // console.log(chartData)
           this.datacollection = {
-            labels: this.attributes.map((_, x) => `${(100 * (x + 1) / this.attributes.length).toFixed(2)}%`),
+            labels: attributes.map((_, x) => `${(100 * (x) / this.attributes.length).toFixed(2)}%`),
             datasets: [
               {
                 label: 'Amount of class entity',
@@ -183,7 +184,7 @@ export default {
   mounted: async function () {
     await this.fillFacets()
     this.postQuery()
-    console.log(this.facetOptionsData)
+    // console.log(this.facetOptionsData)
     this.$forceUpdate()
   }
 }
