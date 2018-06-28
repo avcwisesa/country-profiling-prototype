@@ -60,12 +60,7 @@ export const mutations = {
     state.suggestedEntity = suggestion
   },
   SET_FACET_OPTIONS (state, {facet, options}) {
-    console.log('commited')
-    // console.log(options)
-    // console.log('commited2')
     state.facetOptions[facet] = options
-    console.log('mutated')
-    console.log(state.facetOptions)
   }
 }
 
