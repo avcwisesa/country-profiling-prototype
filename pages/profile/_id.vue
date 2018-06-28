@@ -28,7 +28,7 @@
             <v-flex xs4>
               <v-layout row wrap>
                 <v-flex xs12>
-                  <h3 class="text-xs-center"> &nbsp; &nbsp;Profile Score</h3>
+                  <h3 class="text-xs-center"> &nbsp; &nbsp;Average Completeness</h3>
                 </v-flex>
                 <v-flex xs3></v-flex>
                 <v-flex x5>
