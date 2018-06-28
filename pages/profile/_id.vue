@@ -11,17 +11,40 @@
             <h2>Bar Chart</h2>
             <BarChart :chart-data="datacollection" :options="{ maintainAspectRatio: false }"/>
           </div>
-
-            <v-layout v-for="facet in facets" v-bind:key="facet.code" row wrap>
-                <v-flex xs6>
-                    <v-subheader> {{facet.name}} </v-subheader>
+          <br>
+          <v-layout row wrap>
+            <v-flex xs8>
+              <v-layout v-for="facet in facets" v-bind:key="facet.code" row wrap>
+                  <v-flex xs6>
+                      <v-subheader> {{facet.name}} </v-subheader>
+                  </v-flex>
+                  <v-flex xs6>
+                      <v-select :items="facetOptions[facet.code]" v-model=facetValue[facet.code] item-text="name" item-value="code" autocomplete
+                          class="input-group--focused"
+                      ></v-select>
+                  </v-flex>
+              </v-layout>
+            </v-flex>
+            <v-flex xs4>
+              <v-layout row wrap>
+                <v-flex xs12>
+                  <h3 class="text-xs-center"> &nbsp; &nbsp;Profile Score</h3>
                 </v-flex>
-                <v-flex xs6>
-                    <v-select :items="facetOptions[facet.code]" v-model=facetValue[facet.code] item-text="name" item-value="code" autocomplete
-                        class="input-group--focused"
-                    ></v-select>
+                <v-flex xs3></v-flex>
+                <v-flex x5>
+                  <v-progress-circular class="text-xs-center"
+                    :size="200"
+                    :width="25"
+                    :rotate="-90"
+                    :value="score1"
+                    color=blue
+                  >
+                    <h1> {{ score1 }}% </h1>
+                  </v-progress-circular>
                 </v-flex>
-            </v-layout>
+              </v-layout>
+            </v-flex>
+          </v-layout>
           <v-btn @click="postQuery()" color="success"> Post Query </v-btn>
 
           <v-data-table
@@ -97,11 +120,13 @@ export default {
     },
     facetOptions () {
       return this.facetOptionsData
+    },
+    score1 () {
+      return this.$store.state.score1
     }
   },
   methods: {
     postQuery () {
-      // console.log(this.attributeVariables)
       var attributeVarQuery = this.attributeVariables.reduce(function (acc, attr) {
         return acc + ' ?' + attr
       }, '')
@@ -110,10 +135,9 @@ export default {
       }, '')
       var facetValue = this.facetValue
       var facetQuery = this.facets.reduce(function (acc, attr) {
-        // console.log(facetValue)
         return acc + ` ?class wdt:${attr.code} wd:${facetValue[attr.code] || 'Q0'}.`
       }, '')
-      // console.log(filterExistQuery)
+
       var query = `
         SELECT ?class ${attributeVarQuery}
         WHERE {
@@ -123,13 +147,12 @@ export default {
         SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
         }
       `
-      // console.log(query)
+
       this.$axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
         .then((response) => {
-          // console.log(response)
           var countries = response.data.results.bindings
           this.$store.commit('SET_COUNTRIES1', countries)
-          // console.log(countries)
+
           const reducer = function (acc, country) {
             var exist = Object.keys(country).length - 2
             acc[exist] = acc[exist] + 1 || 1
@@ -137,9 +160,19 @@ export default {
           }
           var attributes = this.attributes.concat([''])
           var acc = Array.apply(null, Array(attributes.length)).map(Number.prototype.valueOf, 0)
-          // console.log(acc)
+
           var chartData = countries.reduce(reducer, acc)
-          // console.log(chartData)
+
+          var score = 0
+          var div = 100 / chartData.length
+          chartData.forEach(function (val, i) {
+            var weight = (i + 1) * div
+            score += (weight * val)
+            console.log(weight, val)
+          })
+          score /= countries.length
+          this.$store.commit('SET_SCORE1', parseFloat(score.toFixed(2)))
+
           this.datacollection = {
             labels: attributes.map((_, x) => `${(100 * (x) / this.attributes.length).toFixed(2)}%`),
             datasets: [
