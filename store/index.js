@@ -9,6 +9,7 @@ export const state = () => ({
   attributes: [],
   score1: 0,
   score2: 0,
+  subclass: false,
   countries1: [],
   countries2: [],
   properties: [1, 2, 3, 4, 5, 6],
@@ -61,6 +62,9 @@ export const mutations = {
   },
   SET_FACET_OPTIONS (state, {facet, options}) {
     state.facetOptions[facet] = options
+  },
+  SET_SUBCLASS (state, subclass) {
+    state.subclass = subclass
   }
 }
 
@@ -73,6 +77,7 @@ export const actions = {
         commit('SET_ATTRIBUTES', response.data.attributes)
         commit('SET_FACETS', response.data.facets)
         commit('SET_PROFILENAME', response.data.name)
+        commit('SET_SUBCLASS', response.data.subclass)
       })
       .catch((error) => {
         console.log(error)

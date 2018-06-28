@@ -121,6 +121,9 @@ export default {
     facetOptions () {
       return this.facetOptionsData
     },
+    subclass () {
+      return this.$store.state.subclass
+    },
     score1 () {
       return this.$store.state.score1
     }
@@ -137,11 +140,13 @@ export default {
       var facetQuery = this.facets.reduce(function (acc, attr) {
         return acc + ` ?class wdt:${attr.code} wd:${facetValue[attr.code] || 'Q0'}.`
       }, '')
+      var includeSubclass = ''
+      if (this.subclass) includeSubclass = '/wdt:P279*'
 
       var query = `
         SELECT ?class ${attributeVarQuery}
         WHERE {
-        ?class wdt:P31 wd:${this.class.code}.
+        ?class wdt:P31${includeSubclass} wd:${this.class.code}.
         ${facetQuery}
         ${filterExistQuery}
         SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
@@ -190,10 +195,12 @@ export default {
     },
     fillFacets () {
       var facetOptionsResults = this.facets.map(async (facet) => {
+        var includeSubclass = ''
+        if (this.subclass) includeSubclass = '/wdt:P279*'
         var query = `
         SELECT DISTINCT ?facet ?facetLabel ?${facet.code}
             WHERE {
-            ?entity wdt:P31 wd:${this.class.code}.
+            ?entity wdt:P31${includeSubclass} wd:${this.class.code}.
             ?entity wdt:${facet.code} ?facet.
             SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
             }

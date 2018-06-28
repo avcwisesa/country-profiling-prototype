@@ -23,6 +23,13 @@
               ></v-select>
             </v-flex>
             <v-flex xs3></v-flex>
+            <v-flex xs8>
+              <v-switch
+                :label="'Include subclass'"
+                v-model="subclass"
+              ></v-switch>
+            </v-flex>
+            <v-flex xs3></v-flex>
             <v-flex xs7>
               <div v-if="profileClass['id']">
                 Code: {{ profileClass['id'] }} <br>
@@ -96,6 +103,7 @@ export default {
       profileClass: '',
       facets: [],
       attributes: [],
+      subclass: false,
       currClass: null,
       currFacet: '',
       currAttribute: ''
@@ -117,7 +125,8 @@ export default {
             code: obj['id'],
             name: obj['label']
           }
-        }))
+        })),
+        subclass: this.subclass
       }
     },
     suggestedEntity () {
