@@ -42,6 +42,9 @@
                     <h1> {{ score1 }}% </h1>
                   </v-progress-circular>
                 </v-flex>
+                <v-flex xs12>
+                  <h3 class="text-xs-center">Total Entity: {{ countries.length }}</h3>
+                </v-flex>
               </v-layout>
             </v-flex>
           </v-layout>
