@@ -48,7 +48,14 @@
               </v-layout>
             </v-flex>
           </v-layout>
-          <v-btn @click="postQuery()" color="success"> Post Query </v-btn>
+          <v-layout row wrap>
+            <v-flex xs2>
+              <v-btn @click="postQuery()" color="success"> Post Query </v-btn>
+            </v-flex>
+            <v-flex xs3>
+              <v-progress-circular v-if="loading" :width="3" :size="50" indeterminate color="green"></v-progress-circular>
+            </v-flex>
+          </v-layout>
 
           <v-data-table
             :headers="headers"
@@ -97,7 +104,8 @@ export default {
       facetValue: {},
       query: '',
       datacollection: null,
-      facetOptionsData: {}
+      facetOptionsData: {},
+      loading: false
     }
   },
   computed: {
@@ -144,6 +152,7 @@ export default {
   },
   methods: {
     postQuery () {
+      this.loading = true
       var attributeVarQuery = this.attributeVariables.reduce(function (acc, attr) {
         return acc + ' ?' + attr
       }, '')
@@ -202,6 +211,8 @@ export default {
               }
             ]
           }
+
+          this.loading = false
         })
         .catch((error) => {
           console.log(error)
