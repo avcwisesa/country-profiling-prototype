@@ -101,10 +101,10 @@ export default {
     headers () {
       var ret = [this.$store.state.class]
       ret = ret.concat(this.$store.state.attributes)
-      ret = ret.concat({ name: 'completeness percentage' })
-      return ret.map(obj => {
-        return { text: obj.name }
+      ret = ret.map(obj => {
+        return { text: obj.name + '(' + obj.code + ')' }
       })
+      return ret.concat({ text: 'completeness percentage' })
     },
     attributeVariables () {
       var attrs = this.$store.state.attributes
