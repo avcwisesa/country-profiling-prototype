@@ -25,7 +25,7 @@
             <v-flex xs3></v-flex>
             <v-flex xs8>
               <v-switch
-                :label="'Include subclass'"
+                :label="'Include subclasses'"
                 v-model="subclass"
               ></v-switch>
             </v-flex>
