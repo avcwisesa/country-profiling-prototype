@@ -16,7 +16,7 @@
             <v-flex xs8>
               <v-layout v-for="facet in facets" v-bind:key="facet.code" row wrap>
                   <v-flex xs6>
-                      <v-subheader> {{facet.name}} </v-subheader>
+                      <v-subheader> {{facet.name}} ({{facet.code}}) </v-subheader>
                   </v-flex>
                   <v-flex xs6>
                       <v-select :items="facetOptions[facet.code]" v-model=facetValue[facet.code] item-text="name" item-value="code" autocomplete
@@ -102,7 +102,7 @@ export default {
       var ret = [this.$store.state.class]
       ret = ret.concat(this.$store.state.attributes)
       ret = ret.map(obj => {
-        return { text: obj.name + '(' + obj.code + ')' }
+        return { text: obj.name + ' (' + obj.code + ')' }
       })
       return ret.concat({ text: 'completeness percentage' })
     },
