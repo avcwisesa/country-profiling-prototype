@@ -55,6 +55,7 @@
             :items="countries"
             hide-actions
             class="elevation-1"
+            disable-initial-sort
           >
             <template slot="items" slot-scope="props">
               <td v-for="attr in attributeVariables" v-bind:key="attr.code" v-if="props.item[attr]" class="text-xs-right">
@@ -152,7 +153,7 @@ export default {
       if (this.subclass) includeSubclass = '/wdt:P279*'
 
       var query = `
-        SELECT ?class ${attributeVarQuery}
+        SELECT DISTINCT ?class ${attributeVarQuery}
         WHERE {
         ?class wdt:P31${includeSubclass} wd:${this.class.code}.
         ${facetQuery}
