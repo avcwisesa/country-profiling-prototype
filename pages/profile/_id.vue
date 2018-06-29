@@ -57,8 +57,13 @@
             class="elevation-1"
           >
             <template slot="items" slot-scope="props">
-              <td v-for="attr in attributeVariables" v-bind:key="attr.code" v-if="props.item[attr]" class="text-xs-right">{{ props.item[attr].value }}</td>
-              <td v-else class="text-xs-right">Empty</td>
+              <td v-for="attr in attributeVariables" v-bind:key="attr.code" v-if="props.item[attr]" class="text-xs-right">
+                <div v-if="attr === 'classLabel'"> {{props.item[attr].value}} </div>
+                <div v-else><v-icon color="green light">check</v-icon></div>
+              </td>
+              <td v-else class="text-xs-right">
+                <v-icon color="red">close</v-icon>
+              </td>
 
               <td class="text-xs-right">{{ (100 * (Object.keys(props.item).length - 2) / attributes.length).toFixed(2)+'%' }}</td>
             </template>
