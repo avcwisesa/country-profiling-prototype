@@ -20,7 +20,7 @@
                   </v-flex>
                   <v-flex xs6>
                       <v-select :items="facetOptions[facet.code]" v-model=facetValue[facet.code] item-text="name" item-value="code" autocomplete
-                          class="input-group--focused"
+                          class="input-group--focused" placeholder="any"
                       ></v-select>
                   </v-flex>
               </v-layout>
@@ -101,7 +101,7 @@ export default {
   },
   data () {
     return {
-      facetValue: {},
+      facetValue: { 'any': 'any' },
       query: '',
       datacollection: null,
       facetOptionsData: {},
@@ -161,7 +161,20 @@ export default {
       }, '')
       var facetValue = this.facetValue
       var facetQuery = this.facets.reduce(function (acc, attr) {
-        return acc + ` ?class wdt:${attr.code} wd:${facetValue[attr.code] || 'Q0'}.`
+        if (facetValue[attr.code] === 'any') {
+          return acc.concat({ code: attr.code, value: '?' + facetValue[attr.code] })
+        } else {
+          return acc.concat({ code: attr.code, value: 'wd:' + facetValue[attr.code] })
+        }
+      }, [])
+      console.log('FC')
+      console.log(facetQuery)
+      var facetQueryString = facetQuery.reduce(function (acc, attr) {
+        if (attr.value === 'wd:undefined') {
+          return acc + ` ?class wdt:${attr.code} ?${attr.code}.`
+        } else {
+          return acc + ` ?class wdt:${attr.code} ${attr.value}.`
+        }
       }, '')
       var includeSubclass = ''
       if (this.subclass) includeSubclass = '/wdt:P279*'
@@ -170,7 +183,7 @@ export default {
         SELECT DISTINCT ?class ${attributeVarQuery}
         WHERE {
         ?class wdt:P31${includeSubclass} wd:${this.class.code}.
-        ${facetQuery}
+        ${facetQueryString}
         ${filterExistQuery}
         SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
         }
@@ -227,7 +240,7 @@ export default {
             WHERE {
             ?entity wdt:P31${includeSubclass} wd:${this.class.code}.
             ?entity wdt:${facet.code} ?facet.
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en,id,de,it". }
             }
         `
         return this.$axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
@@ -240,7 +253,7 @@ export default {
               code: obj['facet']['value'].split('/')[4],
               name: obj['facetLabel']['value']
             }
-          }).sort(function (a, b) {
+          }).concat({ name: 'any', code: 'any' }).sort(function (a, b) {
             if (a.name > b.name) {
               return 1
             } else if (a.name < b.name) {
@@ -255,8 +268,8 @@ export default {
     }
   },
   mounted: async function () {
-    await this.fillFacets()
     this.postQuery()
+    await this.fillFacets()
     // console.log(this.facetOptionsData)
     this.$forceUpdate()
   }
