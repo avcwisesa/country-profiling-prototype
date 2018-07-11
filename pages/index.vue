@@ -9,6 +9,13 @@
           </small>
         </footer>
       </blockquote>
+      <v-card-title class="headline">Background</v-card-title>
+      <v-card-text align='left'>
+        Due to weak enforcement of constraints, assessing the completeness of entities in open-domain knowledge bases such as Wikidata is a challenging task. To address the problem, we are building a tool for profiling the completeness of entities in Wikidata that allows users to analyze the completeness of information of entities of interest. It is based on class-facet-attribute (CFA) profiles, a concept which allows to define, for a given class of interest, a set of attributes that should be analyzed, and a set of facets to structure the entities.<br><br>
+
+This web application is targeted for people who are interested to see or compare data completeness of a defined CFA profile. The aim is to able to visualise certain point of interest such as the amount of existing data, and the completeness within available data. 
+
+      </v-card-text>
       <v-card-title class="headline">Available examples</v-card-title>
       <v-card-text align='left'>
         University profile</br>

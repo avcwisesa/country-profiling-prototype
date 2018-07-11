@@ -5,7 +5,7 @@
         <!-- <img src="/v.png" alt="Vuetify.js" class="mb-5" /> -->
       </div>
       <v-card>
-        <v-card-title class="headline"> {{profileName}} Facet Comparison </v-card-title>
+        <v-card-title class="headline"> {{profileName}} Profile Comparison </v-card-title>
         <v-card-text>
           <div class="bar-chart">
             <BarChart :chart-data="datacollection" :options="{ 
@@ -19,7 +19,7 @@
                 responsiveAnimationDuration: 0
               }"/>
           </div>
-          <h2>Facet 1</h2>
+          <h2>Profile 1</h2>
           <v-layout row wrap>
             <v-flex xs8>
               <v-layout v-for="facet in facets" v-bind:key="facet.code" row wrap>
@@ -47,7 +47,7 @@
             </v-flex>
           </v-layout>
 
-          <h2>Facet 2</h2>
+          <h2>Profile 2</h2>
           <v-layout row wrap>
             <v-flex xs8>
               <v-layout v-for="facet in facets" v-bind:key="facet.code" row wrap>
@@ -79,7 +79,7 @@
 
           <v-expansion-panel popout>
             <v-expansion-panel-content>
-              <div slot="header">Facet 1</div>
+              <div slot="header">Profile 1</div>
               <v-card>
                 <v-data-table
                   :headers="headers"
@@ -107,7 +107,7 @@
             </v-expansion-panel-content>
 
             <v-expansion-panel-content>
-              <div slot="header">Facet 2</div>
+              <div slot="header">Profile 2</div>
               <v-card>
                 <v-data-table
                   :headers="headers"
