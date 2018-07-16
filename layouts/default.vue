@@ -1,57 +1,40 @@
 <template>
   <v-app dark>
-    <v-navigation-drawer
-      :clipped="clipped"
-      v-model="drawer"
-      fixed
-      app
-    >
-      <v-list>
-        <v-list-tile
-          router
-          :to="item.to"
-          :key="i"
-          v-for="(item, i) in menus"
-          exact
-        >
-          <v-list-tile-action>
-            <v-icon v-html="item.icon"></v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title v-text="item.title"></v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-group value="true">
-          <v-list-tile slot="activator">
-            <v-list-tile-title>Examples</v-list-tile-title>
-          </v-list-tile>
-          <v-list-tile
-            router
-            :to="item.to"
-            :key="i"
-            v-for="(item, i) in examples"
-            exact
-          >
-            <v-list-tile-action>
-              <v-icon v-html="item.icon"></v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title v-text="item.title"></v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list-group>
-      </v-list>
-    </v-navigation-drawer>
     <v-toolbar fixed app :clipped-left="clipped">
-      <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
+      <!-- <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon> -->
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-btn depressed color="primary" :to="{path:'/'}">
+        Home
+        <v-icon right>home</v-icon>
+      </v-btn>
+      <v-btn depressed color="primary" :to="{path:'/profile/browse'}">
+        Browse
+        <v-icon right>apps</v-icon>
+      </v-btn>
+      <v-btn depressed color="primary" :to="{path:'/profile/new'}">
+        Create
+        <v-icon right>fiber_new</v-icon>
+      </v-btn>
     </v-toolbar>
     <v-content>
       <v-container>
         <nuxt />
       </v-container>
     </v-content>
+    <v-footer
+      height="auto"
+    >
+      <v-card
+        class="flex"
+        flat
+        tile
+      >
+        <v-card-actions class="teal darken-3 justify-center">
+          2018 — <strong>Free University of Bozen-Bolzano and Universitas Indonesia</strong>
+        </v-card-actions>
+      </v-card>
+    </v-footer>
   </v-app>
 </template>
 
