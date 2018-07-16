@@ -8,7 +8,7 @@
         <v-card-title class="headline"> {{profileName}} </v-card-title>
         <v-card-text>
           <div class="bar-chart">
-            <h2>Bar Chart</h2>
+            <h2>Completeness Distribution</h2>
             <BarChart :chart-data="datacollection" :options="{ maintainAspectRatio: false }"/>
           </div>
           <br>
@@ -28,7 +28,7 @@
             <v-flex xs4>
               <v-layout row wrap>
                 <v-flex xs12>
-                  <h3 class="text-xs-center"> &nbsp; &nbsp;Average Completeness</h3>
+                  <h3 class="text-xs-center"> &nbsp; &nbsp;Average Completeness Score</h3>
                 </v-flex>
                 <v-flex xs3></v-flex>
                 <v-flex x5>
@@ -118,7 +118,7 @@ export default {
       ret = ret.map(obj => {
         return { text: obj.name + ' (' + obj.code + ')', value: obj.code + '_key' }
       })
-      return ret.concat({ text: 'completeness percentage', value: 'percentage_key' })
+      return ret.concat({ text: 'completeness score', value: 'percentage_key' })
     },
     attributeVariables () {
       var attrs = this.$store.state.attributes
