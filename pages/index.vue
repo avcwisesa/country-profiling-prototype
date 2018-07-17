@@ -9,11 +9,7 @@
       <v-container fill-height>
         <v-layout align-center>
           <v-flex text-xs-center>
-            <h2 class="display-4">
-              <span class="wikiRed--text"><strong>Pro</strong></span>
-              <span class="wikiGreen--text"><strong>W</strong></span>
-              <span class="wikiBlue--text"><strong>D</strong></span>
-            </h2>
+            <img class="ml-1" src="/prowd-logo-transparent.png" style="width: 40%"/>
             <div class="subheading my-4">{{ prowdPromo }}</div>
           </v-flex>
         </v-layout>
@@ -49,7 +45,7 @@
   export default {
     data () {
       return {
-        gradient: 'to top right, rgba(5,5,5, .7), rgba(0,0,0, .7)',
+        gradient: 'to top right, rgba(70,70,70, .7), rgba(70,70,70, .7)',
         prowdPromo: 'Class-Facet-Attribute Profiling system for Wikidata',
         searchPromo: 'Know which entity has been completed? Which has not?',
         viewPromo: 'See overall completeness of a class of entities',

@@ -3,7 +3,8 @@
     <v-toolbar fixed app :clipped-left="clipped">
       <v-btn outline color="teal darken-3" :to="{path:'/'}">
         <v-toolbar-title class="green--text">
-          <span class="wikiRed--text"><strong>Pro</strong></span>
+          <span class="wikiRed--text"><strong>P</strong></span>
+          <span class="wikiBlack--text"><strong>ro</strong></span>
           <span class="wikiGreen--text"><strong>W</strong></span>
           <span class="wikiBlue--text"><strong>D</strong></span>
         </v-toolbar-title>
