@@ -1,33 +1,60 @@
 <template>
-  <v-layout>
-    <v-flex text-xs-center>
-      <blockquote class="blockquote">
-        &#8220;Welcome! Please choose one of the options given on left sidebar.&#8221;
-        <footer>
-          <small>
-            <em>&mdash;Cenna</em>
-          </small>
-        </footer>
-      </blockquote>
-      <v-card-title class="headline">Background</v-card-title>
-      <v-card-text align='left'>
-        Due to weak enforcement of constraints, assessing the completeness of entities in open-domain knowledge bases such as Wikidata is a challenging task. To address the problem, we are building a tool for profiling the completeness of entities in Wikidata that allows users to analyze the completeness of information of entities of interest. It is based on class-facet-attribute (CFA) profiles, a concept which allows to define, for a given class of interest, a set of attributes that should be analyzed, and a set of facets to structure the entities.<br><br>
+  <v-container>
+    <v-jumbotron
+      :gradient="gradient"
+      dark
+      height="230px"
+      src="https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    >
+      <v-container fill-height>
+        <v-layout align-center>
+          <v-flex text-xs-center>
+            <h2 class="display-4">
+              <span class="wikiRed--text"><strong>Pro</strong></span>
+              <span class="wikiGreen--text"><strong>W</strong></span>
+              <span class="wikiBlue--text"><strong>D</strong></span>
+            </h2>
+            <div class="subheading my-4">{{ prowdPromo }}</div>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-jumbotron>
 
-This web application is targeted for people who are interested to see or compare data completeness of a defined CFA profile. The aim is to able to visualise certain point of interest such as the amount of existing data, and the completeness within available data. 
-
-      </v-card-text>
-      <v-card-title class="headline">Available examples</v-card-title>
-      <v-card-text align='left'>
-        University profile</br>
-Class: University(Q3918)</br>
-Facets: Country(P17)</br>
-Attributes: inception(P571), official website(P856), location(P131), chairperson(P488)</br> </br>
-
-Country profile</br>
-Class: Country(Q6256)</br>
-Facets: Continent(P30), member of(P463)</br>
-Attributes: head of govt(P6), capital(P36), currency(P38), official language(P37), inception(P571), central bank(P1304)</br>
-      </v-card-text>
-    </v-flex>
-  </v-layout>
+    <v-layout row justify-space-around class="mt-4">
+      <v-flex xs3 offset-xs1>
+        <img class="ml-1" src="/search.png" style="width: 40%"/>
+      </v-flex>
+      <v-flex xs3>
+        <img class="ml-5" src="/analytics.png" style="width: 40%"/>
+      </v-flex>
+      <v-flex xs3>
+        <img class="ml-5" src="/multitask.png" style="width: 40%"/>
+      </v-flex>
+    </v-layout>
+    <v-layout row justify-space-around>
+      <v-flex xs3>
+        <v-card-text class="text-xs-center">{{ searchPromo }}</v-card-text>
+      </v-flex>
+      <v-flex xs3>
+        <v-card-text class="text-xs-center">{{ viewPromo }}</v-card-text>
+      </v-flex>
+      <v-flex xs3>
+        <v-card-text class="text-xs-center">{{ comparePromo }}</v-card-text>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
+
+<script>
+  export default {
+    data () {
+      return {
+        gradient: 'to top right, rgba(5,5,5, .7), rgba(0,0,0, .7)',
+        prowdPromo: 'Class-Facet-Attribute Profiling system for Wikidata',
+        searchPromo: 'Know which entity has been completed? Which has not?',
+        viewPromo: 'See overall completeness of a class of entities',
+        comparePromo: 'Compare completeness between a class of entities'
+      }
+    }
+  }
+</script>

@@ -1,20 +1,25 @@
 <template>
   <v-app dark>
     <v-toolbar fixed app :clipped-left="clipped">
-      <!-- <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon> -->
-      <v-toolbar-title v-text="title"></v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn depressed color="primary" :to="{path:'/'}">
-        Home
-        <v-icon right>home</v-icon>
+      <v-btn outline color="teal darken-3" :to="{path:'/'}">
+        <v-toolbar-title class="green--text">
+          <span class="wikiRed--text"><strong>Pro</strong></span>
+          <span class="wikiGreen--text"><strong>W</strong></span>
+          <span class="wikiBlue--text"><strong>D</strong></span>
+        </v-toolbar-title>
       </v-btn>
-      <v-btn depressed color="primary" :to="{path:'/profile/browse'}">
+      <v-spacer></v-spacer>
+      <v-btn depressed color="teal darken-3" :to="{path:'/profile/browse'}">
         Browse
         <v-icon right>apps</v-icon>
       </v-btn>
-      <v-btn depressed color="primary" :to="{path:'/profile/new'}">
+      <v-btn depressed color="teal darken-3" :to="{path:'/profile/new'}">
         Create
         <v-icon right>fiber_new</v-icon>
+      </v-btn>
+      <v-btn depressed color="teal darken-3" :to="{path:'/profile/new'}">
+        About
+        <v-icon right>info</v-icon>
       </v-btn>
     </v-toolbar>
     <v-content>
@@ -31,7 +36,7 @@
         tile
       >
         <v-card-actions class="teal darken-3 justify-center">
-          2018 — <strong>Free University of Bozen-Bolzano and Universitas Indonesia</strong>
+          2018 — By <strong>Free University of Bozen-Bolzano and Universitas Indonesia</strong>
         </v-card-actions>
       </v-card>
     </v-footer>
@@ -57,7 +62,7 @@
         miniVariant: false,
         right: true,
         rightDrawer: false,
-        title: 'ProWD Prototype'
+        title: 'ProWD'
       }
     }
   }

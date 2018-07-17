@@ -3,6 +3,10 @@ import Vuetify from 'vuetify'
 
 Vue.use(Vuetify, {
   theme: {
+    wikiRed: '#990000',
+    wikiBlue: '#006699',
+    wikiGreen: '#339966',
+    wikiBlack: '#484848',
     primary: '#7986CB',
     secondary: '#CFD8DC',
     accent: '#9c27b0',
