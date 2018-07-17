@@ -17,7 +17,7 @@
         Create
         <v-icon right>fiber_new</v-icon>
       </v-btn>
-      <v-btn depressed color="teal darken-3" :to="{path:'/profile/new'}">
+      <v-btn depressed color="teal darken-3" :to="{path:'/about'}">
         About
         <v-icon right>info</v-icon>
       </v-btn>
