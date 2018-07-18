@@ -49,7 +49,7 @@
         prowdPromo: 'Class-Facet-Attribute Profiling system for Wikidata',
         searchPromo: 'Know which entity has been completed? Which has not?',
         viewPromo: 'See overall completeness of a class of entities',
-        comparePromo: 'Compare completeness between a class of entities'
+        comparePromo: 'Compare completeness between different facet of a class'
       }
     }
   }

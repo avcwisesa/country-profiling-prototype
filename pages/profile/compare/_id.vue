@@ -8,16 +8,7 @@
         <v-card-title class="headline"> {{profileName}} Profile Comparison </v-card-title>
         <v-card-text>
           <div class="bar-chart">
-            <BarChart :chart-data="datacollection" :options="{ 
-                maintainAspectRatio: false,
-                animation: {
-                  duration: 0
-                },
-                hover: {
-                  animationDuration: 0
-                },
-                responsiveAnimationDuration: 0
-              }"/>
+            <BarChart :chart-data="datacollection" :options="chartOptions"/>
           </div>
           <h2>Profile 1</h2>
           <v-layout row wrap>
@@ -161,7 +152,24 @@ export default {
       barcolor2: 'orange',
       facetValue: { '1': { 'any': 'any' }, '2': { 'any': 'any' } },
       facetOptionsData: {},
-      loading: false
+      loading: false,
+      chartOptions: {
+        maintainAspectRatio: false,
+        animation: {
+          duration: 0
+        },
+        hover: {
+          animationDuration: 0
+        },
+        responsiveAnimationDuration: 0,
+        scales: {
+          yAxes: [{
+            ticks: {
+              min: 0
+            }
+          }]
+        }
+      }
     }
   },
   computed: {

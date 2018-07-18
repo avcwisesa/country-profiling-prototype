@@ -9,7 +9,7 @@
         <v-card-text>
           <div class="bar-chart">
             <h2>Completeness Distribution</h2>
-            <BarChart :chart-data="datacollection" :options="{ maintainAspectRatio: false }"/>
+            <BarChart :chart-data="datacollection" :options="chartOptions"/>
           </div>
           <br>
           <v-layout row wrap>
@@ -105,7 +105,17 @@ export default {
       query: '',
       datacollection: null,
       facetOptionsData: {},
-      loading: false
+      loading: false,
+      chartOptions: {
+        maintainAspectRatio: false,
+        scales: {
+          yAxes: [{
+            ticks: {
+              min: 0
+            }
+          }]
+        }
+      }
     }
   },
   computed: {
