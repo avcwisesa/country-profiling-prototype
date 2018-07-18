@@ -350,7 +350,9 @@ export default {
   mounted: async function () {
     await this.compareProfile()
     this.fillFacets()
-    this.$forceUpdate()
+    this.$nextTick(() => {
+      this.$forceUpdate()
+    })
   }
 }
 </script>

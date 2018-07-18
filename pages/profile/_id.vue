@@ -49,7 +49,7 @@
             </v-flex>
           </v-layout>
           <v-layout row wrap>
-            <v-flex xs2>
+            <v-flex xs2 v-if="facets.length > 0">
               <v-btn @click="postQuery()" color="success"> Post Query </v-btn>
             </v-flex>
             <v-flex xs3>
