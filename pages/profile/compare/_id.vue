@@ -8,6 +8,8 @@
         <v-card-title class="headline"> {{profileName}} Profile Comparison </v-card-title>
         <v-card-text>
           <div class="bar-chart">
+            <h2>Completeness Distribution</h2>
+            <v-card-text>Amount of entities according to completeness score</v-card-text>
             <BarChart :chart-data="datacollection" :options="chartOptions"/>
           </div>
           <h2>Profile 1</h2>
@@ -67,6 +69,9 @@
           </v-layout>
 
           <v-btn @click="compareProfile()" color="success"> Post Query </v-btn>
+
+          <v-card-title class="headline"> Completeness table </v-card-title>
+          <v-card-text>Completeness details of all entities within the profile</v-card-text>
 
           <v-expansion-panel popout>
             <v-expansion-panel-content>

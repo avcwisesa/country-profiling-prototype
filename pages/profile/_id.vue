@@ -9,6 +9,7 @@
         <v-card-text>
           <div class="bar-chart">
             <h2>Completeness Distribution</h2>
+            <v-card-text>Amount of entities according to completeness score</v-card-text>
             <BarChart :chart-data="datacollection" :options="chartOptions"/>
           </div>
           <br>
@@ -57,6 +58,8 @@
             </v-flex>
           </v-layout>
 
+          <v-card-title class="headline"> Completeness table </v-card-title>
+          <v-card-text>Completeness details of all entities within the profile</v-card-text>
           <v-data-table
             :headers="headers"
             :items="countries"
