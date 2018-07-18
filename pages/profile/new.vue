@@ -13,28 +13,32 @@
                     class="input-group--focused"
                 ></v-text-field>
             </v-flex>
-            <v-flex xs3>
-                <v-subheader><h3>Class</h3></v-subheader>
-            </v-flex>
-            <v-flex xs7>
-              <v-select
-                v-model="profileClass" label="Class" :items="suggestedEntity" autocomplete required
-                item-text="label" :search-input.sync="currClass"
-              ></v-select>
-            </v-flex>
-            <v-flex xs3></v-flex>
-            <v-flex xs8>
-              <v-switch
-                :label="'Include subclasses'"
-                v-model="subclass"
-              ></v-switch>
-            </v-flex>
-            <v-flex xs3></v-flex>
-            <v-flex xs7>
-              <div v-if="profileClass['id']">
-                Code: {{ profileClass['id'] }} <br>
-                Desc: {{ profileClass['description'] }} <br>
-              </div>
+            <v-flex xs12>
+              <v-layout row>
+                <v-flex xs3>
+                  <v-subheader><h3>Class</h3></v-subheader>
+                </v-flex>
+                <v-flex xs7>
+                  <v-layout column>
+                    <v-flex xs7>
+                      <h3 class="white--text mt-3">{{ profileClass['label'] }} ({{ profileClass['id'] }})</h3>
+                      <v-card-text> {{ profileClass['description'] }} </v-card-text>
+                      <v-select
+                        v-model="profileClass" label="Search class" :items="suggestedEntity" autocomplete required box
+                        item-text="label" :search-input.sync="currClass"
+                      ></v-select>
+                    </v-flex>
+                    <v-flex xs3></v-flex>
+                    <v-flex xs8>
+                      <v-switch
+                        :label="'Include subclasses'"
+                        v-model="subclass"
+                      ></v-switch>
+                    </v-flex>
+                    <v-flex xs3></v-flex>
+                  </v-layout>
+                </v-flex>
+              </v-layout>
             </v-flex>
             <v-flex xs12><br></v-flex>
             <v-flex xs3>
@@ -100,7 +104,7 @@ export default {
     return {
       API_ENDPOINT: process.env.API_ENDPOINT,
       profileName: '',
-      profileClass: '',
+      profileClass: { label: 'Empty', id: 'undefined', description: '-' },
       facets: [],
       attributes: [],
       subclass: false,
