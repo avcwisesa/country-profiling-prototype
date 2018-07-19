@@ -2,6 +2,8 @@ import axios from 'axios'
 
 export const strict = false
 export const state = () => ({
+  alertValue: false,
+  alertMessage: 'alert',
   class: {},
   classElements: [],
   facets: [],
@@ -65,6 +67,12 @@ export const mutations = {
   },
   SET_SUBCLASS (state, subclass) {
     state.subclass = subclass
+  },
+  SET_ALERT_VALUE (state, value) {
+    state.alertValue = value
+  },
+  SET_ALERT_MESSAGE (state, message) {
+    state.alertMessage = message
   }
 }
 
@@ -96,6 +104,9 @@ export const actions = {
   CREATE_PROFILE ({commit, state}, newProfile) {
     return axios.post(process.env.API_ENDPOINT + '/profile/new', newProfile)
       .then((response) => {
+        console.log(newProfile)
+        commit('SET_ALERT_VALUE', true)
+        commit('SET_ALERT_MESSAGE', `Profile successfully created`)
         console.log(response)
       }).catch((error) => {
         console.log(error)
@@ -127,6 +138,19 @@ export const actions = {
       .then((response) => {
         commit('SET_SUGGESTION', response.data.search)
       }).catch((error) => {
+        console.log(error)
+      })
+  },
+  DELETE_PROFILE ({commit}, { name, id }) {
+    console.log('deleting: ' + id)
+    return axios.delete(process.env.API_ENDPOINT + '/profile/' + id)
+      .then((response) => {
+        commit('SET_ALERT_VALUE', true)
+        commit('SET_ALERT_MESSAGE', `Profile '${name}' successfully deleted`)
+      })
+      .catch((error) => {
+        commit('SET_ALERT_VALUE', true)
+        commit('SET_ALERT_MESSAGE', `Failure in deleting profile '${name}'`)
         console.log(error)
       })
   }

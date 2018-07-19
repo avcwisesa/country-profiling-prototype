@@ -25,6 +25,13 @@
     </v-toolbar>
     <v-content>
       <v-container>
+        <v-alert
+          v-model="alertValue"
+          color="success"
+        >
+          <a @click="dismissAlert()"><v-icon class="pr-2">cancel</v-icon></a>
+          {{ alertMessage }}
+        </v-alert>
         <nuxt />
       </v-container>
     </v-content>
@@ -46,6 +53,10 @@
 
 <script>
   export default {
+    fetch () {
+      this.alert = this.alertValue
+      console.log(`alert value: ${this.alert}`)
+    },
     data () {
       return {
         clipped: true,
@@ -64,6 +75,20 @@
         right: true,
         rightDrawer: false,
         title: 'ProWD'
+      }
+    },
+    computed: {
+      alertValue () {
+        return this.$store.state.alertValue
+      },
+      alertMessage () {
+        return this.$store.state.alertMessage
+      }
+    },
+    methods: {
+      dismissAlert () {
+        this.$store.commit('SET_ALERT_VALUE', false)
+        console.log('dismissed')
       }
     }
   }
