@@ -4,13 +4,13 @@
       <v-card>
         <v-card-title class="headline"> {{profileName}} </v-card-title>
         <v-card-text>
-          {{ profileID }}
-          Class: {{ profileClass }} <br>
-          Subclass: {{ subclass }} <br>
-          Facets: {{ facets }} <br>
-          Attributes: {{ attributes }} <br>
-          <br>
-          <v-layout row wrap>
+          <h2>Class: {{ `${profileClass.name} (${profileClass.code})` }}</h2>
+          <div v-if="subclass">(subclass included)</div>
+          <h3 class="mt-3">Facets: </h3>
+          <v-chip v-for="facet in facets" v-bind:key="facet.code">{{ `${facet.name} (${facet.code})` }}</v-chip>
+          <h3>Attributes: </h3>
+          <v-chip v-for="attribute in attributes" v-bind:key="attribute.code">{{ `${attribute.name} (${attribute.code})` }}</v-chip>
+          <v-layout class="mt-4" row wrap>
             <v-flex xs2 v-if="facets.length > 0">
               <v-btn @click="deleteProfile()" color="error"> DELETE </v-btn>
             </v-flex>
