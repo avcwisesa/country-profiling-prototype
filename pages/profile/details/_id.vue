@@ -73,7 +73,7 @@ export default {
   methods: {
     async deleteProfile () {
       await this.$store.dispatch('DELETE_PROFILE', { name: this.profileName, id: this.profileID })
-      this.$router.push({'path': '/profile/browse'})
+      this.$router.push({'path': '/profile/super/browse'})
     }
   }
 }
