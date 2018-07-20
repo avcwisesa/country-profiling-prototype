@@ -31,7 +31,7 @@
       return {
         searchPromo: 'Know which entity has been completed? Which has not?',
         viewPromo: 'See overall completeness of a class of entities',
-        comparePromo: 'Compare completeness between different facet of a class'
+        comparePromo: 'Compare completeness between different facets of a class'
       }
     }
   }

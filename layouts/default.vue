@@ -91,7 +91,7 @@
         rightDrawer: false,
         title: 'ProWD',
         gradient: 'to top right, rgba(70,70,70, .7), rgba(70,70,70, .7)',
-        prowdPromo: 'Class-Facet-Attribute Profiling system for Wikidata'
+        prowdPromo: 'Class-Facet-Attribute Completeness Profiling System for Wikidata'
       }
     },
     computed: {
