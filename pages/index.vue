@@ -1,21 +1,5 @@
 <template>
   <v-container>
-    <v-jumbotron
-      :gradient="gradient"
-      dark
-      height="230px"
-      src="https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
-    >
-      <v-container fill-height>
-        <v-layout align-center>
-          <v-flex text-xs-center>
-            <img class="ml-1" src="/prowd-logo-transparent.png" style="width: 40%"/>
-            <div class="subheading my-4">{{ prowdPromo }}</div>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </v-jumbotron>
-
     <v-layout row justify-space-around class="mt-4">
       <v-flex xs3 offset-xs1>
         <img class="ml-1" src="/search.png" style="width: 40%"/>
@@ -45,8 +29,6 @@
   export default {
     data () {
       return {
-        gradient: 'to top right, rgba(70,70,70, .7), rgba(70,70,70, .7)',
-        prowdPromo: 'Class-Facet-Attribute Profiling system for Wikidata',
         searchPromo: 'Know which entity has been completed? Which has not?',
         viewPromo: 'See overall completeness of a class of entities',
         comparePromo: 'Compare completeness between different facet of a class'

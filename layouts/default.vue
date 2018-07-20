@@ -24,6 +24,21 @@
       </v-btn>
     </v-toolbar>
     <v-content>
+      <v-jumbotron v-if="jumbotron"
+        :gradient="gradient"
+        dark
+        height="250px"
+        src="https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+      >
+        <v-container fill-height>
+          <v-layout align-center>
+            <v-flex text-xs-center>
+              <img class="ml-1" src="/prowd-logo-transparent.png" style="width: 40%"/>
+              <div class="subheading my-4">{{ prowdPromo }}</div>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-jumbotron>
       <v-container>
         <v-alert
           v-model="alertValue"
@@ -53,7 +68,7 @@
 
 <script>
   export default {
-    fetch () {
+    fetch (ctx) {
       this.alert = this.alertValue
       console.log(`alert value: ${this.alert}`)
     },
@@ -74,7 +89,9 @@
         miniVariant: false,
         right: true,
         rightDrawer: false,
-        title: 'ProWD'
+        title: 'ProWD',
+        gradient: 'to top right, rgba(70,70,70, .7), rgba(70,70,70, .7)',
+        prowdPromo: 'Class-Facet-Attribute Profiling system for Wikidata'
       }
     },
     computed: {
@@ -83,6 +100,9 @@
       },
       alertMessage () {
         return this.$store.state.alertMessage
+      },
+      jumbotron () {
+        return this.$store.state.jumbotron
       }
     },
     methods: {

@@ -19,7 +19,8 @@ export const state = () => ({
   profileName: '',
   profileClass: '',
   profiles: [],
-  suggestedEntity: []
+  suggestedEntity: [],
+  jumbotron: false
 })
 
 export const mutations = {
@@ -73,6 +74,9 @@ export const mutations = {
   },
   SET_ALERT_MESSAGE (state, message) {
     state.alertMessage = message
+  },
+  SET_JUMBOTRON_VALUE (state, value) {
+    state.jumbotron = value
   }
 }
 
