@@ -26,20 +26,30 @@
                   </v-flex>
               </v-layout>
             </v-flex>
-            <v-flex xs1></v-flex>
-            <v-flex xs3>
-              <v-progress-circular
-                :size="250"
-                :width="30"
-                :rotate="-90"
-                :value="score1"
-                color=blue
-              >
-                <h1> {{ score1 }}% </h1>
-              </v-progress-circular>
+            <v-flex xs4>
+              <v-layout row wrap>
+                <v-flex xs12>
+                  <h3 class="text-xs-center"> &nbsp; &nbsp;Average Completeness Score</h3>
+                </v-flex>
+                <v-flex xs3></v-flex>
+                <v-flex x5>
+                  <v-progress-circular class="text-xs-center"
+                    :size="200"
+                    :width="25"
+                    :rotate="-90"
+                    :value="score1"
+                    color=blue
+                  >
+                    <h1> {{ score1 }}% </h1>
+                  </v-progress-circular>
+                </v-flex>
+                <v-flex xs12>
+                  <h3 class="text-xs-center">Total number of entities: {{ countries1.length }}</h3>
+                </v-flex>
+              </v-layout>
             </v-flex>
           </v-layout>
-
+          <v-divider class="my-4"></v-divider>
           <h2>Profile 2</h2>
           <v-layout row wrap>
             <v-flex xs8>
@@ -54,17 +64,27 @@
                   </v-flex>
               </v-layout>
             </v-flex>
-            <v-flex xs1></v-flex>
-            <v-flex xs3>
-              <v-progress-circular
-                :size="250"
-                :width="30"
-                :rotate="-90"
-                :value="score2"
-                color=orange
-              >
-                <h1> {{ score2 }}% </h1>
-              </v-progress-circular>
+            <v-flex xs4>
+              <v-layout row wrap>
+                <v-flex xs12>
+                  <h3 class="text-xs-center"> &nbsp; &nbsp;Average Completeness Score</h3>
+                </v-flex>
+                <v-flex xs3></v-flex>
+                <v-flex x5>
+                  <v-progress-circular class="text-xs-center"
+                    :size="200"
+                    :width="25"
+                    :rotate="-90"
+                    :value="score1"
+                    color=orange
+                  >
+                    <h1> {{ score2 }}% </h1>
+                  </v-progress-circular>
+                </v-flex>
+                <v-flex xs12>
+                  <h3 class="text-xs-center">Total number of entities: {{ countries2.length }}</h3>
+                </v-flex>
+              </v-layout>
             </v-flex>
           </v-layout>
 
