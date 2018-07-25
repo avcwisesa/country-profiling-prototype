@@ -109,14 +109,14 @@
                         <a v-bind:href="props.item['class'].value">
                           <v-icon>link</v-icon>
                         </a>
-                        {{props.item[attr].value}}
+                        {{props.item[attr]}}
                       </div>
                       <div v-else><v-icon color="green light">check</v-icon></div>
                     </td>
                     <td v-else class="text-xs-right">
                       <v-icon color="red">close</v-icon>
                     </td>
-                    <td class="text-xs-right">{{ (100 * (Object.keys(props.item).length - 2) / attributes.length).toFixed(2)+'%' }}</td>
+                    <td class="text-xs-right">{{ (props.item.score).toFixed(2)+'%' }}</td>
                   </template>
                 </v-data-table>
               </v-card>
@@ -137,14 +137,14 @@
                         <a v-bind:href="props.item['class'].value">
                           <v-icon>link</v-icon>
                         </a>
-                        {{props.item[attr].value}}
+                        {{props.item[attr]}}
                       </div>
                       <div v-else><v-icon color="green light">check</v-icon></div>
                     </td>
                     <td v-else class="text-xs-right">
                       <v-icon color="red">close</v-icon>
                     </td>
-                    <td class="text-xs-right">{{ (100 * (Object.keys(props.item).length - 2) / attributes.length).toFixed(2)+'%' }}</td>
+                    <td class="text-xs-right">{{ (props.item.score).toFixed(2)+'%' }}</td>
                   </template>
                 </v-data-table>
               </v-card>
@@ -202,12 +202,14 @@ export default {
       return this.$store.state.profileName
     },
     headers () {
-      var ret = [this.$store.state.class]
-      ret = ret.concat(this.$store.state.attributes)
+      var entityClass = this.$store.state.class
+      var ret = [].concat(this.$store.state.attributes)
       ret = ret.map(obj => {
-        return { text: obj.name + ' (' + obj.code + ')', value: obj.code + '_key' }
+        return { text: obj.name + ' (' + obj.code + ')', value: obj.code + 'Exist' }
       })
-      return ret.concat({ text: 'completeness percentage', value: 'percentage_key' })
+      ret = [{ text: entityClass.name + ' (' + entityClass.code + ')', value: 'classLabel' }].concat(ret)
+      var headers = ret.concat({ text: 'completeness score', value: 'score' })
+      return headers
     },
     class () {
       return this.$store.state.class
@@ -227,10 +229,26 @@ export default {
       return ['classLabel'].concat(attrs)
     },
     countries1 () {
-      return this.$store.state.countries1
+      var entities = this.$store.state.countries1
+      var attributes = this.$store.state.attributes
+
+      entities.forEach(function (entity) {
+        entity.classLabel = entity.classLabel.value
+        entity.score = (100 * (Object.keys(entity).length - 2) / attributes.length)
+      })
+
+      return entities
     },
     countries2 () {
-      return this.$store.state.countries2
+      var entities = this.$store.state.countries2
+      var attributes = this.$store.state.attributes
+
+      entities.forEach(function (entity) {
+        entity.classLabel = entity.classLabel.value
+        entity.score = (100 * (Object.keys(entity).length - 2) / attributes.length)
+      })
+
+      return entities
     },
     barChartData () {
       return this.$store.state.barChartData

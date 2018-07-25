@@ -126,9 +126,6 @@ export default {
       var entities = this.$store.state.countries1
       var attributes = this.$store.state.attributes
 
-      console.log('entities')
-      console.log(entities)
-
       entities.forEach(function (entity) {
         entity.classLabel = entity.classLabel.value
         entity.score = (100 * (Object.keys(entity).length - 2) / attributes.length)
@@ -144,8 +141,6 @@ export default {
       })
       ret = [{ text: entityClass.name + ' (' + entityClass.code + ')', value: 'classLabel' }].concat(ret)
       var headers = ret.concat({ text: 'completeness score', value: 'score' })
-      console.log('headers')
-      console.log(headers)
       return headers
     },
     attributeVariables () {
