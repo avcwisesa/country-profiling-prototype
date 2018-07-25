@@ -129,7 +129,7 @@ export default {
       var ret = [this.$store.state.class]
       ret = ret.concat(this.$store.state.attributes)
       ret = ret.map(obj => {
-        return { text: obj.name + ' (' + obj.code + ')', value: obj.code + '_key' }
+        return { text: obj.name + ' (' + obj.code + ')', value: obj.code + 'Exist' }
       })
       return ret.concat({ text: 'completeness score', value: 'percentage_key' })
     },
