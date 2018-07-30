@@ -88,7 +88,14 @@
             </v-flex>
           </v-layout>
 
-          <v-btn @click="compareProfile()" color="success"> Post Query </v-btn>
+          <v-layout row wrap>
+            <v-flex xs2 v-if="facets.length > 0">
+              <v-btn @click="compareProfile()" color="success"> Post Query </v-btn>
+            </v-flex>
+            <v-flex xs3>
+              <v-progress-circular v-if="loading" :width="3" :size="50" indeterminate color="green"></v-progress-circular>
+            </v-flex>
+          </v-layout>
 
           <v-card-title class="headline"> Completeness table </v-card-title>
           <v-card-text>Completeness details of all entities within the profile</v-card-text>
@@ -104,7 +111,7 @@
                   class="elevation-1"
                 >
                   <template slot="items" slot-scope="props">
-                    <td v-for="attr in attributeVariables" v-bind:key="attr.code" v-if="props.item[attr]" class="text-xs-right">
+                    <td v-for="attr in attributeVariables" v-bind:key="attr.code" v-if="props.item[attr]" class="text-xs-left">
                       <div v-if="attr === 'classLabel'">
                         <a v-bind:href="props.item['class'].value">
                           <v-icon>link</v-icon>
@@ -113,10 +120,10 @@
                       </div>
                       <div v-else><v-icon color="green light">check</v-icon></div>
                     </td>
-                    <td v-else class="text-xs-right">
+                    <td v-else class="text-xs-left">
                       <v-icon color="red">close</v-icon>
                     </td>
-                    <td class="text-xs-right">{{ (props.item.score).toFixed(2)+'%' }}</td>
+                    <td class="text-xs-left">{{ (props.item.score).toFixed(2)+'%' }}</td>
                   </template>
                 </v-data-table>
               </v-card>
@@ -132,7 +139,7 @@
                   class="elevation-1"
                 >
                   <template slot="items" slot-scope="props">
-                    <td v-for="attr in attributeVariables" v-bind:key="attr.code" v-if="props.item[attr]" class="text-xs-right">
+                    <td v-for="attr in attributeVariables" v-bind:key="attr.code" v-if="props.item[attr]" class="text-xs-left">
                       <div v-if="attr === 'classLabel'">
                         <a v-bind:href="props.item['class'].value">
                           <v-icon>link</v-icon>
@@ -141,10 +148,10 @@
                       </div>
                       <div v-else><v-icon color="green light">check</v-icon></div>
                     </td>
-                    <td v-else class="text-xs-right">
+                    <td v-else class="text-xs-left">
                       <v-icon color="red">close</v-icon>
                     </td>
-                    <td class="text-xs-right">{{ (props.item.score).toFixed(2)+'%' }}</td>
+                    <td class="text-xs-left">{{ (props.item.score).toFixed(2)+'%' }}</td>
                   </template>
                 </v-data-table>
               </v-card>
@@ -164,6 +171,8 @@ export default {
   async fetch ({ store, params }) {
     await store.dispatch('FETCH_PROFILE_BY_ID', params.id)
     await store.dispatch('FETCH_FACET_OPTIONS')
+    store.commit('SET_SCORE1', 0)
+    store.commit('SET_SCORE2', 0)
   },
   components: {
     BarChart
@@ -267,7 +276,7 @@ export default {
     }
   },
   methods: {
-    async postQuery (id, barColor, setTable, setScore) {
+    async postQuery (id) {
       this.loading = true
       var attributeVarQuery = this.attributeVariables.reduce(function (acc, attr) {
         return acc + ' ?' + attr
@@ -283,8 +292,6 @@ export default {
           return acc.concat({ code: attr.code, value: 'wd:' + facetValue[attr.code] })
         }
       }, [])
-      console.log('FC')
-      console.log(facetQuery)
       var facetQueryString = facetQuery.reduce(function (acc, attr) {
         if (attr.value === 'wd:undefined') {
           return acc + ` ?class wdt:${attr.code} ?${attr.code}.`
@@ -305,41 +312,7 @@ export default {
         }
       `
 
-      this.$axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
-        .then((response) => {
-          var countries = response.data.results.bindings
-          this.$store.commit(setTable, countries)
-
-          const reducer = function (acc, country) {
-            var exist = Object.keys(country).length - 2
-            acc[exist] = acc[exist] + 1 || 1
-            return acc
-          }
-          var attributes = this.attributes.concat([''])
-          var acc = Array.apply(null, Array(attributes.length)).map(Number.prototype.valueOf, 0)
-
-          var chartData = countries.reduce(reducer, acc)
-
-          var score = 0
-          var div = 100 / chartData.length
-          chartData.forEach(function (val, i) {
-            var weight = (i + 1) * div
-            score += (weight * val)
-          })
-          score /= countries.length
-          this.$store.commit(setScore, parseFloat(score.toFixed(2)))
-
-          this.datasets.push({
-            label: `Facet ${id}`,
-            backgroundColor: barColor,
-            data: chartData
-          })
-
-          this.loading = false
-        })
-        .catch((error) => {
-          console.log(error)
-        })
+      return this.$axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
     },
     fillFacets () {
       var facetOptionsResults = this.facets.map(async (facet) => {
@@ -376,26 +349,55 @@ export default {
         this.facetOptionsData = tmp
       })
     },
-    async compareProfile () {
-      this.datasets = []
-      await this.postQuery(1, this.barColor1, 'SET_COUNTRIES1', 'SET_SCORE1')
-      await this.postQuery(2, this.barcolor2, 'SET_COUNTRIES2', 'SET_SCORE2')
-      console.log('profile1 done')
+    processResponse (response, id, barColor, setTable, setScore) {
+      var countries = response.data.results.bindings
+      this.$store.commit(setTable, countries)
+
+      const reducer = function (acc, country) {
+        var exist = Object.keys(country).length - 2
+        acc[exist] = acc[exist] + 1 || 1
+        return acc
+      }
       var attributes = this.attributes.concat([''])
-      this.datacollection = {
+      var acc = Array.apply(null, Array(attributes.length)).map(Number.prototype.valueOf, 0)
+
+      var chartData = countries.reduce(reducer, acc)
+
+      var score = 0
+      var div = 100 / chartData.length
+      chartData.forEach(function (val, i) {
+        var weight = (i + 1) * div
+        score += (weight * val)
+      })
+      score /= countries.length
+      this.$store.commit(setScore, parseFloat(score.toFixed(2)))
+
+      this.datasets.push({
+        label: `Facet ${id}`,
+        backgroundColor: barColor,
+        data: chartData
+      })
+    },
+    async compareProfile () {
+      this.loading = true
+      this.datasets = []
+      const response1 = this.postQuery(1)
+      const response2 = this.postQuery(2)
+      const [data1, data2] = await Promise.all([response1, response2])
+      this.processResponse(data1, 1, this.barColor1, 'SET_COUNTRIES1', 'SET_SCORE1')
+      this.processResponse(data2, 2, this.barcolor2, 'SET_COUNTRIES2', 'SET_SCORE2')
+      var attributes = this.attributes.concat([''])
+      this.datacollection = await {
         labels: attributes.map((_, x) => `${(100 * (x) / this.attributes.length).toFixed(2)}%`),
         datasets: this.datasets
       }
-      console.log(this.datasets)
-      console.log(this.datacollection)
+      this.loading = false
     }
   },
   mounted: async function () {
     await this.compareProfile()
-    this.fillFacets()
-    this.$nextTick(() => {
-      this.$forceUpdate()
-    })
+    await this.fillFacets()
+    console.log('done')
   }
 }
 </script>
