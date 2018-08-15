@@ -1,14 +1,11 @@
 <template>
   <v-layout column justify-center align-center>
-    <v-flex xs12 sm8 md6>
-      <div class="text-xs-center">
-        <!-- <img src="/v.png" alt="Vuetify.js" class="mb-5" /> -->
-      </div>
+    <v-flex xs12>
       <v-card>
-        <v-card-title class="headline"> {{profileName}} </v-card-title>
+        <h1 class="ml-3 pt-4"> {{profileName}} </h1>
         <v-card-text>
           <div class="bar-chart">
-            <h2>Completeness Distribution</h2>
+            <v-card-title class="headline"> Completeness Distribution </v-card-title>
             <v-card-text>Amount of entities according to completeness score</v-card-text>
             <BarChart :chart-data="datacollection" :options="chartOptions"/>
           </div>
@@ -58,61 +55,67 @@
             </v-flex>
           </v-layout>
 
-          <v-card-title class="headline mt-5"> Most missing attributes </v-card-title>
-          <v-card-text>Attributes most frequently missing within this profile</v-card-text>
-          <v-layout row wrap>
-            <v-flex xs4 v-for="(attr, i) in attributes.slice(0,3)" v-bind:key="attr.code">
-              <v-layout align-center justify-center column fill-height>
-              <v-flex xs12>
-                <h3 class="text-xs-center">{{attr.name}}({{attr.code}})</h3>
-              </v-flex>
-              <v-flex xs12></v-flex>
-              <v-flex >
-                <v-progress-circular
-                  :size="200"
-                  :width="25"
-                  :rotate="-90"
-                  :value="attr.score"
-                  :color="colors[i]"
-                >
-                  <h1> {{ (attr.score).toFixed(2) }}% </h1>
-                </v-progress-circular>
-              </v-flex>
-              <v-flex xs12>
-                <h3 class="text-xs-center">Entities with this attribute: {{ attr.count }}</h3>
-              </v-flex>
-            </v-layout>
+        </v-card-text>
+      </v-card>
+    </v-flex>
+    <v-flex xs12>
+      <v-card >
+        <v-card-title class="headline mt-3"> Most missing attributes </v-card-title>
+        <v-card-text>Attributes most frequently missing within this profile</v-card-text>
+        <v-layout row align-center justify-space-around>
+          <v-flex class="px-3 mx-5" xs3 v-for="(attr, i) in attributes.slice(0,3)" v-bind:key="attr.code">
+            <v-layout align-center justify-center column fill-height>
+            <v-flex xs12>
+              <h3 class="text-xs-center">{{attr.name}}({{attr.code}})</h3>
+            </v-flex>
+            <v-flex xs12></v-flex>
+            <v-flex >
+              <v-progress-circular
+                :size="200"
+                :width="25"
+                :rotate="-90"
+                :value="attr.score"
+                :color="colors[i]"
+              >
+                <h1> {{ (attr.score).toFixed(2) }}% </h1>
+              </v-progress-circular>
+            </v-flex>
+            <v-flex xs12 class="mx-5">
+              <h3 class="text-xs-center">Entities with this attribute: {{ attr.count }}</h3>
             </v-flex>
           </v-layout>
+          </v-flex>
+        </v-layout>
+      </v-card>
+    </v-flex>
+    <v-flex xs12>
+      <v-card>
+        <v-card-title class="headline mt-3"> Completeness table </v-card-title>
+        <v-card-text>Completeness details of all entities within the profile</v-card-text>
+        <v-data-table
+          :headers="headers"
+          :items="countries"
+          hide-actions
+          class="elevation-1"
+          disable-initial-sort
+        >
+          <template slot="items" slot-scope="props">
+            <td v-for="attr in attributeVariables" v-bind:key="attr.code" v-if="props.item[attr]" class="text-xs-right">
+              <div v-if="attr === 'classLabel'">
+                <a v-bind:href="props.item['class'].value">
+                  <v-icon>link</v-icon>
+                </a>
+                {{props.item[attr]}}
+              </div>
+              <div v-else><v-icon color="green light">check</v-icon></div>
+            </td>
+            <td v-else class="text-xs-right">
+              <v-icon color="red">close</v-icon>
+            </td>
 
-          <v-card-title class="headline mt-3"> Completeness table </v-card-title>
-          <v-card-text>Completeness details of all entities within the profile</v-card-text>
-          <v-data-table
-            :headers="headers"
-            :items="countries"
-            hide-actions
-            class="elevation-1"
-            disable-initial-sort
-          >
-            <template slot="items" slot-scope="props">
-              <td v-for="attr in attributeVariables" v-bind:key="attr.code" v-if="props.item[attr]" class="text-xs-right">
-                <div v-if="attr === 'classLabel'">
-                  <a v-bind:href="props.item['class'].value">
-                    <v-icon>link</v-icon>
-                  </a>
-                  {{props.item[attr]}}
-                </div>
-                <div v-else><v-icon color="green light">check</v-icon></div>
-              </td>
-              <td v-else class="text-xs-right">
-                <v-icon color="red">close</v-icon>
-              </td>
-
-              <td class="text-xs-right">{{ (props.item.score).toFixed(2)+'%' }}</td>
-            </template>
-          </v-data-table>
-
-        </v-card-text>
+            <td class="text-xs-right">{{ (props.item.score).toFixed(2)+'%' }}</td>
+          </template>
+        </v-data-table>
       </v-card>
     </v-flex>
   </v-layout>
