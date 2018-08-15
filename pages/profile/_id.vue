@@ -58,7 +58,34 @@
             </v-flex>
           </v-layout>
 
-          <v-card-title class="headline"> Completeness table </v-card-title>
+          <v-card-title class="headline mt-5"> Most missing attributes </v-card-title>
+          <v-card-text>Attributes most frequently missing within this profile</v-card-text>
+          <v-layout row wrap>
+            <v-flex xs4 v-for="(attr, i) in attributes.slice(0,3)" v-bind:key="attr.code">
+              <v-layout align-center justify-center column fill-height>
+              <v-flex xs12>
+                <h3 class="text-xs-center">{{attr.name}}({{attr.code}})</h3>
+              </v-flex>
+              <v-flex xs12></v-flex>
+              <v-flex >
+                <v-progress-circular
+                  :size="200"
+                  :width="25"
+                  :rotate="-90"
+                  :value="attr.score"
+                  :color="colors[i]"
+                >
+                  <h1> {{ (attr.score).toFixed(2) }}% </h1>
+                </v-progress-circular>
+              </v-flex>
+              <v-flex xs12>
+                <h3 class="text-xs-center">Entities with this attribute: {{ attr.count }}</h3>
+              </v-flex>
+            </v-layout>
+            </v-flex>
+          </v-layout>
+
+          <v-card-title class="headline mt-3"> Completeness table </v-card-title>
           <v-card-text>Completeness details of all entities within the profile</v-card-text>
           <v-data-table
             :headers="headers"
@@ -105,6 +132,7 @@ export default {
   data () {
     return {
       facetValue: { 'any': 'any' },
+      colors: ['red', 'orange', 'yellow'],
       query: '',
       datacollection: null,
       facetOptionsData: {},
@@ -158,7 +186,30 @@ export default {
       return this.$store.state.facets
     },
     attributes () {
-      return this.$store.state.attributes
+      var entities = this.$store.state.countries1
+      var attributes = this.$store.state.attributes
+      var amount = {}
+
+      attributes.forEach(function (attr) {
+        amount[attr.code] = 0
+      })
+
+      entities.forEach(function (entity) {
+        attributes.forEach(function (attr) {
+          if (entity[attr.code + 'Exist']) {
+            amount[attr.code] += 1
+          }
+        })
+      })
+
+      attributes.forEach(function (attr) {
+        attr.count = amount[attr.code]
+        attr.score = (100 * attr.count / entities.length)
+      })
+
+      return attributes.sort(function (a, b) {
+        return a.count - b.count
+      })
     },
     profileName () {
       return this.$store.state.profileName
