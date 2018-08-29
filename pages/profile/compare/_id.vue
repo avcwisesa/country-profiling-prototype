@@ -20,9 +20,9 @@
                       <v-subheader> {{facet.name}} ({{facet.code}}) </v-subheader>
                   </v-flex>
                   <v-flex xs6>
-                      <v-select :items="facetOptions[facet.code]" v-model="facetValue[1][facet.code]" item-text="name" item-value="code" autocomplete
+                      <v-autocomplete :items="facetOptions[facet.code]" v-model="facetValue[1][facet.code]" item-text="name" item-value="code"
                           class="input-group--focused" placeholder="any"
-                      ></v-select>
+                      ></v-autocomplete>
                   </v-flex>
               </v-layout>
             </v-flex>
@@ -58,9 +58,9 @@
                       <v-subheader> {{facet.name}} ({{facet.code}}) </v-subheader>
                   </v-flex>
                   <v-flex xs6>
-                      <v-select :items="facetOptions[facet.code]" v-model="facetValue[2][facet.code]" item-text="name" item-value="code" autocomplete
+                      <v-autocomplete :items="facetOptions[facet.code]" v-model="facetValue[2][facet.code]" item-text="name" item-value="code"
                           class="input-group--focused" placeholder="any"
-                      ></v-select>
+                      ></v-autocomplete>
                   </v-flex>
               </v-layout>
             </v-flex>
@@ -75,7 +75,7 @@
                     :size="200"
                     :width="25"
                     :rotate="-90"
-                    :value="score1"
+                    :value="score2"
                     color=orange
                   >
                     <h1> {{ score2 }}% </h1>
@@ -97,11 +97,75 @@
             </v-flex>
           </v-layout>
 
-          <v-card-title class="headline"> Completeness table </v-card-title>
+        </v-card-text>
+      </v-card>
+    </v-flex>
+    <v-flex xs12>
+      <v-card>
+        <v-card-title class="headline mt-3"> Most missing attributes </v-card-title>
+        <v-card-text>Attributes most frequently missing within this profile</v-card-text>
+
+        <h2 class="ml-4 my-3">Profile 1</h2>
+        <v-layout row align-center justify-space-around>
+          <v-flex class="px-3 mx-5 mt-2" xs3 v-for="(attr, i) in attributes.slice(0,3)" v-bind:key="attr.code">
+            <v-layout align-center justify-center column fill-height>
+              <v-flex xs12>
+                <h3 class="text-xs-center">{{attr.name}}({{attr.code}})</h3>
+              </v-flex>
+              <v-flex xs12></v-flex>
+              <v-flex >
+                <v-progress-circular
+                  :size="200"
+                  :width="25"
+                  :rotate="-90"
+                  :value="attr.score"
+                  :color="colors[i]"
+                >
+                  <h1> {{ (attr.score).toFixed(2) }}% </h1>
+                </v-progress-circular>
+              </v-flex>
+              <v-flex xs12 class="mx-5">
+                <h3 class="text-xs-center">Entities with this attribute: {{ attr.count }}</h3>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+        </v-layout>
+
+        <v-divider class="my-4"></v-divider>
+        <h2 class="ml-4 mb-3">Profile 2</h2>
+        <v-layout row align-center justify-space-around>
+          <v-flex class="px-3 mx-5 my-3" xs3 v-for="(attr, i) in attributes2.slice(0,3)" v-bind:key="attr.code">
+            <v-layout align-center justify-center column fill-height>
+              <v-flex xs12>
+                <h3 class="text-xs-center">{{attr.name}}({{attr.code}})</h3>
+              </v-flex>
+              <v-flex xs12></v-flex>
+              <v-flex >
+                <v-progress-circular
+                  :size="200"
+                  :width="25"
+                  :rotate="-90"
+                  :value="attr.score"
+                  :color="colors[i]"
+                >
+                  <h1> {{ (attr.score).toFixed(2) }}% </h1>
+                </v-progress-circular>
+              </v-flex>
+              <v-flex xs12 class="mx-5">
+                <h3 class="text-xs-center">Entities with this attribute: {{ attr.count }}</h3>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+        </v-layout>
+      </v-card>
+    </v-flex>
+    <v-flex xs12>
+      <v-card>
+        <v-card-title class="headline mt-3"> Completeness table </v-card-title>
           <v-card-text>Completeness details of all entities within the profile</v-card-text>
 
           <v-expansion-panel popout>
-            <v-expansion-panel-content>
+            <v-expansion-panel-content class="px-3 pb-3">
               <div slot="header">Profile 1</div>
               <v-card>
                 <v-data-table
@@ -129,7 +193,7 @@
               </v-card>
             </v-expansion-panel-content>
 
-            <v-expansion-panel-content>
+            <v-expansion-panel-content class="px-3 pb-3">
               <div slot="header">Profile 2</div>
               <v-card>
                 <v-data-table
@@ -157,8 +221,6 @@
               </v-card>
             </v-expansion-panel-content>
           </v-expansion-panel>
-
-        </v-card-text>
       </v-card>
     </v-flex>
   </v-layout>
@@ -181,6 +243,7 @@ export default {
     return {
       query: '',
       datacollection: null,
+      colors: ['red', 'orange', 'yellow'],
       datasets: [],
       barColor1: 'blue',
       barcolor2: 'orange',
@@ -230,7 +293,57 @@ export default {
       return this.facetOptionsData
     },
     attributes () {
-      return this.$store.state.attributes
+      var entities = this.$store.state.countries1.slice()
+      var attributes = this.$store.state.attributes.slice()
+      var amount = {}
+
+      attributes.forEach(function (attr) {
+        amount[attr.code] = 0
+      })
+
+      entities.forEach(function (entity) {
+        attributes.forEach(function (attr) {
+          if (entity[attr.code + 'Exist']) {
+            amount[attr.code] += 1
+          }
+        })
+      })
+
+      attributes.forEach(function (attr) {
+        attr.count = amount[attr.code]
+        attr.score = (100 * attr.count / entities.length)
+      })
+
+      return attributes.sort(function (a, b) {
+        return a.count - b.count
+      })
+    },
+    attributes2 () {
+      var entities = JSON.parse(JSON.stringify(this.$store.state.countries2))
+      var attributes = JSON.parse(JSON.stringify(this.$store.state.attributes))
+      var amount = {}
+
+      attributes.forEach(function (attr) {
+        amount[attr.code] = 0
+      })
+
+      entities.forEach(function (entity) {
+        attributes.forEach(function (attr) {
+          if (entity[attr.code + 'Exist']) {
+            amount[attr.code] += 1
+          }
+        })
+      })
+
+      attributes.forEach(function (attr) {
+        attr.count = amount[attr.code]
+        attr.score = (100 * attr.count / entities.length)
+      })
+
+      return attributes.sort(function (a, b) {
+        return a.count - b.count
+      })
+      // return this.$store.state.attributes.slice()
     },
     attributeVariables () {
       var attrs = this.$store.state.attributes
