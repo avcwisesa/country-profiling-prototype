@@ -102,15 +102,15 @@
     </v-flex>
     <v-flex xs12>
       <v-card>
-        <v-card-title class="headline mt-3"> Most missing attributes </v-card-title>
-        <v-card-text>Attributes most frequently missing within this profile</v-card-text>
+        <v-card-title class="headline mt-3"> Attribute Completeness Score </v-card-title>
+        <v-card-text>Degree of completeness for attributes of interest</v-card-text>
 
         <h2 class="ml-4 my-3">Profile 1</h2>
         <v-layout row align-center justify-space-around>
           <v-flex class="px-3 mx-5 mt-2" xs3 v-for="(attr, i) in attributes.slice(0,3)" v-bind:key="attr.code">
             <v-layout align-center justify-center column fill-height>
               <v-flex xs12>
-                <h3 class="text-xs-center">{{attr.name}}({{attr.code}})</h3>
+                <h3 class="text-xs-center">{{attr.name}} ({{attr.code}})</h3>
               </v-flex>
               <v-flex xs12></v-flex>
               <v-flex >
@@ -137,7 +137,7 @@
           <v-flex class="px-3 mx-5 my-3" xs3 v-for="(attr, i) in attributes2.slice(0,3)" v-bind:key="attr.code">
             <v-layout align-center justify-center column fill-height>
               <v-flex xs12>
-                <h3 class="text-xs-center">{{attr.name}}({{attr.code}})</h3>
+                <h3 class="text-xs-center">{{attr.name}} ({{attr.code}})</h3>
               </v-flex>
               <v-flex xs12></v-flex>
               <v-flex >
@@ -293,8 +293,8 @@ export default {
       return this.facetOptionsData
     },
     attributes () {
-      var entities = this.$store.state.countries1.slice()
-      var attributes = this.$store.state.attributes.slice()
+      var entities = JSON.parse(JSON.stringify(this.$store.state.countries1))
+      var attributes = JSON.parse(JSON.stringify(this.$store.state.attributes))
       var amount = {}
 
       attributes.forEach(function (attr) {

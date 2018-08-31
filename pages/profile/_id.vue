@@ -17,9 +17,9 @@
                       <v-subheader> {{facet.name}} ({{facet.code}}) </v-subheader>
                   </v-flex>
                   <v-flex xs6>
-                      <v-select :items="facetOptions[facet.code]" v-model=facetValue[facet.code] item-text="name" item-value="code" autocomplete
+                      <v-autocomplete :items="facetOptions[facet.code]" v-model=facetValue[facet.code] item-text="name" item-value="code"
                           class="input-group--focused" placeholder="any"
-                      ></v-select>
+                      ></v-autocomplete>
                   </v-flex>
               </v-layout>
             </v-flex>
@@ -60,13 +60,13 @@
     </v-flex>
     <v-flex xs12>
       <v-card >
-        <v-card-title class="headline mt-3"> Most missing attributes </v-card-title>
-        <v-card-text>Attributes most frequently missing within this profile</v-card-text>
+        <v-card-title class="headline mt-3"> Attribute Completeness Score </v-card-title>
+        <v-card-text>Degree of completeness for attributes of interest</v-card-text>
         <v-layout row align-center justify-space-around>
           <v-flex class="px-3 mx-5" xs3 v-for="(attr, i) in attributes.slice(0,3)" v-bind:key="attr.code">
             <v-layout align-center justify-center column fill-height>
             <v-flex xs12>
-              <h3 class="text-xs-center">{{attr.name}}({{attr.code}})</h3>
+              <h3 class="text-xs-center">{{attr.name}} ({{attr.code}})</h3>
             </v-flex>
             <v-flex xs12></v-flex>
             <v-flex >
@@ -154,8 +154,8 @@ export default {
   },
   computed: {
     countries () {
-      var entities = this.$store.state.countries1
-      var attributes = this.$store.state.attributes
+      var entities = JSON.parse(JSON.stringify(this.$store.state.countries1))
+      var attributes = JSON.parse(JSON.stringify(this.$store.state.attributes))
 
       entities.forEach(function (entity) {
         entity.classLabel = entity.classLabel.value
