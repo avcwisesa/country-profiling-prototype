@@ -33,7 +33,15 @@
         <v-container fill-height>
           <v-layout align-center>
             <v-flex text-xs-center>
-              <img class="ml-1" src="/prowd-logo-transparent.png" style="width: 40%"/>
+              <!-- <img class="ml-1" src="/prowd-logo-transparent.png" style="width: 40%"/> -->
+              <!-- <h1 class="display-4 font-weight-black">P</h1>
+              <h1 class="display-4 font-weight-black">ro</h1>
+              <h1 class="display-4 font-weight-black">W</h1>
+              <h1 class="display-4 font-weight-black">D</h1> -->
+              <span class="display-4 font-weight-black wikiRed--text"><strong>P</strong></span>
+              <span class="display-4 font-weight-black wikiBlack--text"><strong>ro</strong></span>
+              <span class="display-4 font-weight-black wikiGreen--text"><strong>W</strong></span>
+              <span class="display-4 font-weight-black wikiBlue--text"><strong>D</strong></span>
               <div class="subheading my-4">{{ prowdPromo }}</div>
             </v-flex>
           </v-layout>
@@ -59,7 +67,7 @@
         tile
       >
         <v-card-actions class="teal darken-3 justify-center">
-          2018 — By <strong>Free University of Bozen-Bolzano and Universitas Indonesia</strong>
+          2018 — &nbsp;<strong>Free University of Bozen-Bolzano and Universitas Indonesia</strong>
         </v-card-actions>
       </v-card>
     </v-footer>
