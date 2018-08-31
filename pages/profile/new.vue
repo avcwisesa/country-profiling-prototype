@@ -23,10 +23,25 @@
                     <v-flex xs7>
                       <h3 class="white--text mt-3">{{ profileClass['label'] }} ({{ profileClass['id'] }})</h3>
                       <v-card-text> {{ profileClass['description'] }} </v-card-text>
-                      <v-select
-                        v-model="profileClass" label="Search class" :items="suggestedEntity" autocomplete required box
-                        item-text="label" :search-input.sync="currClass"
-                      ></v-select>
+                      <v-autocomplete
+                        v-model="profileClass" label="Search class" :items="suggestedEntity" required box
+                        item-text="label" return-object :search-input.sync="currClass"
+                      >
+                        <template
+                          slot="item"
+                          slot-scope="data"
+                        >
+                          <template v-if="typeof data.item !== 'object'">
+                            <v-list-tile-content v-text="data.item"></v-list-tile-content>
+                          </template>
+                          <template v-else>
+                            <v-list-tile-content>
+                              <v-list-tile-title >{{data.item.label}} ({{data.item.id}})</v-list-tile-title>
+                              <v-list-tile-sub-title>{{data.item.description}}</v-list-tile-sub-title>
+                            </v-list-tile-content>
+                          </template>
+                        </template>
+                      </v-autocomplete>
                     </v-flex>
                     <v-flex xs3></v-flex>
                     <v-flex xs8>
@@ -45,8 +60,8 @@
               <v-subheader><h3>Facets</h3></v-subheader>
             </v-flex>
             <v-flex xs8>
-              <v-select
-                v-model="facets" label="Add facets" chips tags clearable required
+              <v-combobox
+                v-model="facets" label="Add facets" chips multiple clearable required
                 item-text="label" :items="suggestedEntity" :search-input.sync="currFacet"
               >
                   <template slot="selection" slot-scope="data">
@@ -59,28 +74,55 @@
                       <span>({{data.item['label']}})</span>
                       </v-chip>
                   </template>
-              </v-select>
+                  <template
+                    slot="item"
+                    slot-scope="data"
+                  >
+                    <template v-if="typeof data.item !== 'object'">
+                      <v-list-tile-content v-text="data.item"></v-list-tile-content>
+                    </template>
+                    <template v-else>
+                      <v-list-tile-content>
+                        <v-list-tile-title >{{data.item.label}} ({{data.item.id}})</v-list-tile-title>
+                        <v-list-tile-sub-title>{{data.item.description}}</v-list-tile-sub-title>
+                      </v-list-tile-content>
+                    </template>
+                  </template>
+              </v-combobox>
             </v-flex>
             <v-flex xs3>
               <v-subheader><h3>Attributes</h3></v-subheader>
             </v-flex>
             <v-flex xs8>
-              <v-select
-                v-model="attributes" label="Add attributes" chips tags clearable required
+              <v-combobox
+                v-model="attributes" label="Add attributes" chips multiple clearable required
                 item-text="label" :items="suggestedEntity" :search-input.sync="currAttribute"
               >
-                  <template slot="selection" slot-scope="data">
-                      <v-chip
-                      :selected="data.selected"
-                      close
-                      @input="remove(attributes, data.item)"
-                      >
-                      <strong>{{ data.item['id'] }}</strong>&nbsp;
-                      <span>({{data.item['label']}})</span>
-                      </v-chip>
+                <template slot="selection" slot-scope="data">
+                    <v-chip
+                    :selected="data.selected"
+                    close
+                    @input="remove(attributes, data.item)"
+                    >
+                    <strong>{{ data.item['id'] }}</strong>&nbsp;
+                    <span>({{data.item['label']}})</span>
+                    </v-chip>
+                </template>
+                <template
+                  slot="item"
+                  slot-scope="data"
+                >
+                  <template v-if="typeof data.item !== 'object'">
+                    <v-list-tile-content v-text="data.item"></v-list-tile-content>
                   </template>
-
-              </v-select>
+                  <template v-else>
+                    <v-list-tile-content>
+                      <v-list-tile-title >{{data.item.label}} ({{data.item.id}})</v-list-tile-title>
+                      <v-list-tile-sub-title>{{data.item.description}}</v-list-tile-sub-title>
+                    </v-list-tile-content>
+                  </template>
+                </template>
+              </v-combobox>
             </v-flex>
             <v-flex xs3><v-card-text></v-card-text></v-flex>
             <v-flex xs6>
