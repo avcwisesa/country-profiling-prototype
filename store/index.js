@@ -20,7 +20,8 @@ export const state = () => ({
   profileClass: '',
   profiles: [],
   suggestedEntity: [],
-  jumbotron: false
+  jumbotron: false,
+  languages: []
 })
 
 export const mutations = {
@@ -77,6 +78,9 @@ export const mutations = {
   },
   SET_JUMBOTRON_VALUE (state, value) {
     state.jumbotron = value
+  },
+  SET_LANGUAGES (state, languages) {
+    state.languages = languages
   }
 }
 
@@ -137,10 +141,19 @@ export const actions = {
       })
     })
   },
-  SUGGESTER ({commit, state}, { type, query }) {
+  SUGGESTER ({commit}, { type, query }) {
     return axios.post(process.env.WIKIDATA_API_ENDPOINT + `?action=wbsearchentities&format=json&origin=*&type=${type}&search=${query}&language=en`)
       .then((response) => {
         commit('SET_SUGGESTION', response.data.search)
+      }).catch((error) => {
+        console.log(error)
+      })
+  },
+  LANGUAGES ({commit}) {
+    return axios.get(process.env.WIKIDATA_API_ENDPOINT + `?action=query&format=json&origin=*&meta=siteinfo&siprop=languages`)
+      .then((response) => {
+        console.log(response.data.query.languages)
+        commit('SET_LANGUAGES', response.data.query.languages)
       }).catch((error) => {
         console.log(error)
       })

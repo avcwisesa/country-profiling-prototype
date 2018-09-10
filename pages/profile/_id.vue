@@ -47,6 +47,20 @@
             </v-flex>
           </v-layout>
           <v-layout row wrap>
+            <v-flex xs2>
+              <v-autocomplete
+                v-model=languageCode label="label code" :items="languages" required box
+                item-text="code" item-value="code"
+              >
+                <template
+                  slot="item"
+                  slot-scope="data"
+                >
+                  {{data.item}}
+                </template>
+              </v-autocomplete>
+            </v-flex>
+            <v-flex xs10></v-flex>
             <v-flex xs2 v-if="facets.length > 0">
               <v-btn @click="postQuery()" color="success"> Post Query </v-btn>
             </v-flex>
@@ -126,8 +140,11 @@ import BarChart from '~/components/BarChart.vue'
 
 export default {
   async fetch ({ store, params }) {
-    await store.dispatch('FETCH_PROFILE_BY_ID', params.id)
-    await store.dispatch('FETCH_FACET_OPTIONS')
+    await Promise.all([
+      store.dispatch('LANGUAGES'),
+      store.dispatch('FETCH_PROFILE_BY_ID', params.id),
+      store.dispatch('FETCH_FACET_OPTIONS')
+    ])
   },
   components: {
     BarChart
@@ -139,6 +156,7 @@ export default {
       query: '',
       datacollection: null,
       facetOptionsData: {},
+      languageCode: 'en',
       loading: false,
       chartOptions: {
         maintainAspectRatio: false,
@@ -173,6 +191,9 @@ export default {
       ret = [{ text: entityClass.name + ' (' + entityClass.code + ')', value: 'classLabel' }].concat(ret)
       var headers = ret.concat({ text: 'completeness score', value: 'score' })
       return headers
+    },
+    languages () {
+      return this.$store.state.languages
     },
     attributeVariables () {
       var attrs = this.$store.state.attributes
@@ -262,7 +283,7 @@ export default {
         ?class wdt:P31${includeSubclass} wd:${this.class.code}.
         ${facetQueryString}
         ${filterExistQuery}
-        SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "${this.languageCode}, [AUTO_LANGUAGE]". }
         }
       `
 
