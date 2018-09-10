@@ -67,7 +67,7 @@
         tile
       >
         <v-card-actions class="teal darken-3 justify-center">
-          2018 — &nbsp;<strong>Free University of Bozen-Bolzano and Universitas Indonesia</strong>
+          2018 — &nbsp;<strong>Free University of Bozen-Bolzano, Universitas Indonesia and Max-Planck Institute for Informatics</strong>
         </v-card-actions>
       </v-card>
     </v-footer>
