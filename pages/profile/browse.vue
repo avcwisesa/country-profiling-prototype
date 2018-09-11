@@ -6,7 +6,7 @@
         <v-card-actions>
              <v-btn round @click="goTo(profile.ID)" color="green">SEE PROFILE</v-btn>
              <v-btn round @click="compare(profile.ID)" color="brown">COMPARE</v-btn>
-             <!-- <v-btn round disabled color="orange">EDIT</v-btn> -->
+             <v-btn round @click="details(profile.ID)" color="orange">EDIT</v-btn>
         </v-card-actions>
       </v-card>
     </v-flex>
@@ -50,6 +50,9 @@ export default {
     },
     goToCreate () {
       this.$router.push({'path': '/profile/new'})
+    },
+    details (ID) {
+      this.$router.push({'path': '/profile/details/' + ID})
     }
   }
 }
