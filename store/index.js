@@ -85,7 +85,7 @@ export const mutations = {
 }
 
 export const actions = {
-  FETCH_PROFILE_BY_ID ({commit, state}, id) {
+  FETCH_PROFILE_BY_ID ({commit}, id) {
     console.log('fetching2 ID: ' + id)
     return axios.get(process.env.API_ENDPOINT + '/profile/' + id)
       .then((response) => {
@@ -99,7 +99,7 @@ export const actions = {
         console.log(error)
       })
   },
-  FETCH_PROFILE ({commit, state}) {
+  FETCH_PROFILE ({commit}) {
     console.log('fetching all profiles')
     return axios.get(process.env.API_ENDPOINT + '/profile')
       .then((response) => {
@@ -109,12 +109,23 @@ export const actions = {
         console.log(error)
       })
   },
-  CREATE_PROFILE ({commit, state}, newProfile) {
+  CREATE_PROFILE ({commit}, newProfile) {
     return axios.post(process.env.API_ENDPOINT + '/profile/new', newProfile)
       .then((response) => {
         console.log(newProfile)
         commit('SET_ALERT_VALUE', true)
         commit('SET_ALERT_MESSAGE', `Profile successfully created`)
+        console.log(response)
+      }).catch((error) => {
+        console.log(error)
+      })
+  },
+  UPDATE_PROFILE ({commit}, newProfile) {
+    return axios.put(process.env.API_ENDPOINT + '/profile/update', newProfile)
+      .then((response) => {
+        console.log(newProfile)
+        commit('SET_ALERT_VALUE', true)
+        commit('SET_ALERT_MESSAGE', `Profile successfully updated`)
         console.log(response)
       }).catch((error) => {
         console.log(error)

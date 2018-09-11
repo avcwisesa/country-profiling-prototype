@@ -274,8 +274,8 @@ export default {
     },
     async updateProfile () {
       console.log(this.newProfile)
-      // await this.$store.dispatch('CREATE_PROFILE', this.newProfile)
-      // this.$router.push({'path': '/profile/browse'})
+      await this.$store.dispatch('UPDATE_PROFILE', this.newProfile)
+      this.$router.push({'path': '/profile/' + this.profileID})
     },
     remove (data, item) {
       data.splice(data.indexOf(item), 1)
