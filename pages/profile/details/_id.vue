@@ -274,7 +274,7 @@ export default {
     },
     async updateProfile () {
       console.log(this.newProfile)
-      await this.$store.dispatch('UPDATE_PROFILE', this.newProfile)
+      await this.$store.dispatch('UPDATE_PROFILE', {id: this.profileID, profile: this.newProfile})
       this.$router.push({'path': '/profile/' + this.profileID})
     },
     remove (data, item) {

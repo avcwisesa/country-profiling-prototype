@@ -120,10 +120,10 @@ export const actions = {
         console.log(error)
       })
   },
-  UPDATE_PROFILE ({commit}, newProfile) {
-    return axios.put(process.env.API_ENDPOINT + '/profile/update', newProfile)
+  UPDATE_PROFILE ({commit}, { id, profile }) {
+    return axios.put(process.env.API_ENDPOINT + '/profile/' + id, profile)
       .then((response) => {
-        console.log(newProfile)
+        console.log(profile)
         commit('SET_ALERT_VALUE', true)
         commit('SET_ALERT_MESSAGE', `Profile successfully updated`)
         console.log(response)
