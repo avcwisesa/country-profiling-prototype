@@ -95,6 +95,14 @@
             <v-flex xs3>
               <v-progress-circular v-if="loading" :width="3" :size="50" indeterminate color="green"></v-progress-circular>
             </v-flex>
+            <v-flex xs12>
+              <v-alert
+                v-model=warning outline dismissible
+                type="warning"
+              >
+                Current version of the app only support up to 20.000 entities
+              </v-alert>
+            </v-flex>
           </v-layout>
 
         </v-card-text>
@@ -242,6 +250,7 @@ export default {
   data () {
     return {
       query: '',
+      warning: false,
       datacollection: null,
       colors: ['red', 'orange', 'yellow'],
       datasets: [],
@@ -423,6 +432,7 @@ export default {
         ${filterExistQuery}
         SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
         }
+        LIMIT 20000
       `
 
       return this.$axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
@@ -438,6 +448,7 @@ export default {
             ?entity wdt:${facet.code} ?facet.
             SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en,id,de,it". }
             }
+            LIMIT 10000
         `
         return this.$axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
       })
@@ -505,6 +516,8 @@ export default {
         datasets: this.datasets
       }
       this.loading = false
+
+      this.warning = (this.countries1.length === 20000 || this.countries2.length === 20000)
     }
   },
   mounted: async function () {
