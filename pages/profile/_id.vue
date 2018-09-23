@@ -12,15 +12,34 @@
           <br>
           <v-layout row wrap>
             <v-flex xs8>
-              <v-layout v-for="facet in facets" v-bind:key="facet.code" row wrap>
-                  <v-flex xs6>
-                      <v-subheader> {{facet.name}} ({{facet.code}}) </v-subheader>
-                  </v-flex>
-                  <v-flex xs6>
-                      <v-autocomplete :items="facetOptions[facet.code]" v-model=facetValue[facet.code] item-text="name" item-value="code"
-                          class="input-group--focused" placeholder="any"
-                      ></v-autocomplete>
-                  </v-flex>
+              <v-layout column>
+                <v-flex class="my-4">
+                  <v-layout v-for="facet in facets" v-bind:key="facet.code" row wrap>
+                    <v-flex xs6>
+                        <v-subheader><h3>Filters</h3></v-subheader>
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-card-text v-if="filters.length === 0">No filter</v-card-text>
+                      <v-chip v-else v-for="filter in filters" v-bind:key="filter.prop.code"
+                      @input="remove(filters, filter)"
+                      >
+                        {{filter.prop.name}}: {{filter.value.name}}
+                      </v-chip>
+                    </v-flex>
+                  </v-layout>
+                </v-flex>
+                <v-flex>
+                  <v-layout v-for="facet in facets" v-bind:key="facet.code" row wrap>
+                      <v-flex xs6>
+                          <v-subheader> {{facet.name}} ({{facet.code}}) </v-subheader>
+                      </v-flex>
+                      <v-flex xs6>
+                          <v-autocomplete :items="facetOptions[facet.code]" v-model=facetValue[facet.code] item-text="name" item-value="code"
+                              class="input-group--focused" placeholder="any"
+                          ></v-autocomplete>
+                      </v-flex>
+                  </v-layout>
+                </v-flex>
               </v-layout>
             </v-flex>
             <v-flex xs4>
@@ -72,7 +91,7 @@
                 v-model=warning outline dismissible
                 type="warning"
               >
-                Current version of the app only support up to 20.000 entities
+                Current version of the app only support up to 5.000 entities
               </v-alert>
             </v-flex>
           </v-layout>
@@ -253,6 +272,9 @@ export default {
     subclass () {
       return this.$store.state.subclass
     },
+    filters () {
+      return this.$store.state.filters
+    },
     score1 () {
       return this.$store.state.score1
     }
@@ -260,10 +282,10 @@ export default {
   methods: {
     postQuery () {
       this.loading = true
-      var attributeVarQuery = this.attributeVariables.reduce(function (acc, attr) {
+      var attributeVarQueryString = this.attributeVariables.reduce(function (acc, attr) {
         return acc + ' ?' + attr
       }, '')
-      var filterExistQuery = this.attributes.reduce(function (acc, attr) {
+      var filterExistQueryString = this.attributes.reduce(function (acc, attr) {
         return acc + ` OPTIONAL {BIND ("TRUE" AS ?${attr.code}Exist) FILTER EXISTS{?class wdt:${attr.code} ?${attr.code}}}`
       }, '')
       var facetValue = this.facetValue
@@ -274,8 +296,7 @@ export default {
           return acc.concat({ code: attr.code, value: 'wd:' + facetValue[attr.code] })
         }
       }, [])
-      console.log('FC')
-      console.log(facetQuery)
+
       var facetQueryString = facetQuery.reduce(function (acc, attr) {
         if (attr.value === 'wd:undefined') {
           return acc + ` ?class wdt:${attr.code} ?${attr.code}.`
@@ -286,15 +307,23 @@ export default {
       var includeSubclass = ''
       if (this.subclass) includeSubclass = '/wdt:P279*'
 
+      var classFilterQueryString = this.filters.reduce(function (acc, filter) {
+        return acc + ` ?class wdt:${filter.prop.code} wd:${filter.value.code}.`
+      }, '')
+
       var query = `
-        SELECT DISTINCT ?class ${attributeVarQuery}
+        SELECT DISTINCT ?class ${attributeVarQueryString}
         WHERE {
-        ?class wdt:P31${includeSubclass} wd:${this.class.code}.
-        ${facetQueryString}
-        ${filterExistQuery}
-        SERVICE wikibase:label { bd:serviceParam wikibase:language "${this.languageCode}, [AUTO_LANGUAGE]". }
+          SELECT ?class ${attributeVarQueryString}
+          WHERE {
+          ${classFilterQueryString}
+          ?class wdt:P31${includeSubclass} wd:${this.class.code}.
+          ${facetQueryString}
+          ${filterExistQueryString}
+          SERVICE wikibase:label { bd:serviceParam wikibase:language "${this.languageCode}, [AUTO_LANGUAGE]". }
+          }
+          LIMIT 10000
         }
-        LIMIT 20000
       `
 
       this.$axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
@@ -351,7 +380,7 @@ export default {
             ?entity wdt:${facet.code} ?facet.
             SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en,id,de,it". }
             }
-            LIMIT 10000
+            LIMIT 1000
         `
         return this.$axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
       })
@@ -380,7 +409,6 @@ export default {
   mounted: async function () {
     this.postQuery()
     await this.fillFacets()
-    // console.log(this.facetOptionsData)
     this.$forceUpdate()
   }
 }

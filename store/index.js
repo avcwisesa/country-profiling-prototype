@@ -9,6 +9,7 @@ export const state = () => ({
   facets: [],
   facetOptions: {},
   attributes: [],
+  filters: [],
   score1: 0,
   score2: 0,
   subclass: false,
@@ -20,6 +21,7 @@ export const state = () => ({
   profileClass: '',
   profiles: [],
   suggestedEntity: [],
+  suggestedProperty: [],
   jumbotron: false,
   languages: []
 })
@@ -61,14 +63,20 @@ export const mutations = {
   SET_PROFILES (state, profiles) {
     state.profiles = profiles
   },
-  SET_SUGGESTION (state, suggestion) {
+  SET_SUGGESTED_ENTITY (state, suggestion) {
     state.suggestedEntity = suggestion
+  },
+  SET_SUGGESTED_PROPERTY (state, suggestion) {
+    state.suggestedProperty = suggestion
   },
   SET_FACET_OPTIONS (state, {facet, options}) {
     state.facetOptions[facet] = options
   },
   SET_SUBCLASS (state, subclass) {
     state.subclass = subclass
+  },
+  SET_FILTERS (state, filters) {
+    state.filters = JSON.parse(filters)
   },
   SET_ALERT_VALUE (state, value) {
     state.alertValue = value
@@ -94,6 +102,7 @@ export const actions = {
         commit('SET_FACETS', response.data.facets)
         commit('SET_PROFILENAME', response.data.name)
         commit('SET_SUBCLASS', response.data.subclass)
+        commit('SET_FILTERS', response.data.filters)
       })
       .catch((error) => {
         console.log(error)
@@ -147,7 +156,6 @@ export const actions = {
 
     Promise.all(responsePromise).then((completed) => {
       completed.map((response) => {
-        // console.log(response.data)
         commit('SET_FACET_OPTIONS', { facet: response.data.head.vars[2], options: response.data.results.bindings })
       })
     })
@@ -155,7 +163,13 @@ export const actions = {
   SUGGESTER ({commit}, { type, query }) {
     return axios.post(process.env.WIKIDATA_API_ENDPOINT + `?action=wbsearchentities&format=json&origin=*&type=${type}&search=${query}&language=en`)
       .then((response) => {
-        commit('SET_SUGGESTION', response.data.search)
+        var commitMethod = ''
+        if (type === 'item') {
+          commitMethod = 'SET_SUGGESTED_ENTITY'
+        } else {
+          commitMethod = 'SET_SUGGESTED_PROPERTY'
+        }
+        commit(commitMethod, response.data.search)
       }).catch((error) => {
         console.log(error)
       })
