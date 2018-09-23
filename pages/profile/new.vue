@@ -55,14 +55,87 @@
                 </v-flex>
               </v-layout>
             </v-flex>
-            <v-flex xs12><br></v-flex>
+            <v-flex xs3>
+              <v-subheader><h3>Filters</h3></v-subheader>
+            </v-flex>
+            <v-flex xs8>
+              <v-layout class="mt-2" column>
+                <v-flex>
+                  <v-card-text v-if="filters.length === 0">No filter</v-card-text>
+                  <v-chip v-else v-for="filter in filters" v-bind:key="filter.code" close
+                  @input="remove(filters, filter)"
+                  >
+                    {{filter.prop.label}}: {{filter.value.label}}
+                  </v-chip>
+                </v-flex>
+                <v-flex>
+                  <v-layout class="mt-2" row wrap>
+                    <v-flex xs4 class="mt-3">
+                      <v-autocomplete
+                        v-model="filterProp" label="Property" :items="suggestedProp" required
+                        item-text="label" return-object :search-input.sync="currProp"
+                      >
+                        <template
+                          slot="item"
+                          slot-scope="data"
+                        >
+                          <template v-if="typeof data.item !== 'object'">
+                            <v-list-tile-content v-text="data.item"></v-list-tile-content>
+                          </template>
+                          <template v-else>
+                            <v-list-tile-content>
+                              <v-list-tile-title >{{data.item.label}} ({{data.item.id}})</v-list-tile-title>
+                              <v-list-tile-sub-title>{{data.item.description}}</v-list-tile-sub-title>
+                            </v-list-tile-content>
+                          </template>
+                        </template>
+                      </v-autocomplete>
+                    </v-flex>
+                    <v-flex xs4 class="mt-3 mx-3">
+                      <v-autocomplete
+                        v-model="filterValue" label="Value" :items="suggestedEntity" required
+                        item-text="label" return-object :search-input.sync="currValue"
+                      >
+                        <template
+                          slot="item"
+                          slot-scope="data"
+                        >
+                          <template v-if="typeof data.item !== 'object'">
+                            <v-list-tile-content v-text="data.item"></v-list-tile-content>
+                          </template>
+                          <template v-else>
+                            <v-list-tile-content>
+                              <v-list-tile-title >{{data.item.label}} ({{data.item.id}})</v-list-tile-title>
+                              <v-list-tile-sub-title>{{data.item.description}}</v-list-tile-sub-title>
+                            </v-list-tile-content>
+                          </template>
+                        </template>
+                      </v-autocomplete>
+                    </v-flex>
+                    <v-flex class="ml-3">
+                      <v-btn
+                        dark
+                        fab
+                        top
+                        small
+                        right
+                        color="pink"
+                        @click="addFilter()"
+                      >
+                        <v-icon>add</v-icon>
+                      </v-btn>
+                    </v-flex>
+                  </v-layout>
+                </v-flex>
+              </v-layout>
+            </v-flex>
             <v-flex xs3>
               <v-subheader><h3>Facets</h3></v-subheader>
             </v-flex>
             <v-flex xs8>
               <v-combobox
                 v-model="facets" label="Add facets" chips multiple clearable required
-                item-text="label" :items="suggestedEntity" :search-input.sync="currFacet"
+                item-text="label" :items="suggestedProp" :search-input.sync="currFacet"
               >
                   <template slot="selection" slot-scope="data">
                       <v-chip
@@ -96,7 +169,7 @@
             <v-flex xs8>
               <v-combobox
                 v-model="attributes" label="Add attributes" chips multiple clearable required
-                item-text="label" :items="suggestedEntity" :search-input.sync="currAttribute"
+                item-text="label" :items="suggestedProp" :search-input.sync="currAttribute"
               >
                 <template slot="selection" slot-scope="data">
                     <v-chip
@@ -149,10 +222,15 @@ export default {
       profileClass: { label: 'Empty', id: 'undefined', description: '-' },
       facets: [],
       attributes: [],
+      filters: [],
+      filterProp: {},
+      filterValue: {},
       subclass: false,
-      currClass: null,
+      currClass: '',
       currFacet: '',
-      currAttribute: ''
+      currAttribute: '',
+      currProp: '',
+      currValue: ''
     }
   },
   computed: {
@@ -172,22 +250,43 @@ export default {
             name: obj['label']
           }
         })),
+        filters: JSON.stringify(this.filters.map(obj => {
+          return {
+            prop: {
+              code: obj.prop['id'],
+              name: obj.prop['label']
+            },
+            value: {
+              code: obj.value['id'],
+              name: obj.value['label']
+            }
+          }
+        })),
         subclass: this.subclass
       }
     },
     suggestedEntity () {
       return this.$store.state.suggestedEntity
+    },
+    suggestedProp () {
+      return this.$store.state.suggestedProperty
     }
   },
   watch: {
     currAttribute (query) {
-      this.entitySuggestion('property', query)
+      this.propertySuggestion(query)
     },
     currFacet (query) {
-      this.entitySuggestion('property', query)
+      this.propertySuggestion(query)
     },
     currClass (query) {
-      this.entitySuggestion('item', query)
+      this.entitySuggestion(query)
+    },
+    currProp (query) {
+      this.propertySuggestion(query)
+    },
+    currValue (query) {
+      this.entitySuggestion(query)
     }
   },
   methods: {
@@ -200,8 +299,17 @@ export default {
       data.splice(data.indexOf(item), 1)
       data = [...data]
     },
-    entitySuggestion (type, query) {
-      this.$store.dispatch('SUGGESTER', { type: type, query: query })
+    addFilter () {
+      this.filters.push({
+        prop: this.filterProp,
+        value: this.filterValue
+      })
+    },
+    entitySuggestion (query) {
+      this.$store.dispatch('SUGGESTER', { type: 'item', query: query })
+    },
+    propertySuggestion (query) {
+      this.$store.dispatch('SUGGESTER', { type: 'property', query: query })
     }
   }
 }
