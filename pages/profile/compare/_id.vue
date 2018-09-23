@@ -12,6 +12,20 @@
             <v-card-text>Amount of entities according to completeness score</v-card-text>
             <BarChart :chart-data="datacollection" :options="chartOptions"/>
           </div>
+          <v-layout class="my-4" v-for="facet in facets" v-bind:key="facet.code" row wrap>
+            <v-flex xs4>
+                <h2>Class Filters</h2>
+            </v-flex>
+            <v-flex xs3>
+              <v-card-text v-if="filters.length === 0">No filter</v-card-text>
+              <v-chip v-else v-for="filter in filters" v-bind:key="filter.prop.code"
+              @input="remove(filters, filter)"
+              >
+                {{filter.prop.name}}: {{filter.value.name}}
+              </v-chip>
+            </v-flex>
+          </v-layout>
+          <v-divider class="my-4"></v-divider>
           <h2>Profile 1</h2>
           <v-layout row wrap>
             <v-flex xs8>
@@ -390,6 +404,9 @@ export default {
     subclass () {
       return this.$store.state.subclass
     },
+    filters () {
+      return this.$store.state.filters
+    },
     score1 () {
       return this.$store.state.score1
     },
@@ -424,9 +441,14 @@ export default {
       var includeSubclass = ''
       if (this.subclass) includeSubclass = '/wdt:P279*'
 
+      var classFilterQueryString = this.filters.reduce(function (acc, filter) {
+        return acc + ` ?class wdt:${filter.prop.code} wd:${filter.value.code}.`
+      }, '')
+
       var query = `
         SELECT DISTINCT ?class ${attributeVarQuery}
         WHERE {
+        ${classFilterQueryString}
         ?class wdt:P31${includeSubclass} wd:${this.class.code}.
         ${facetQueryString}
         ${filterExistQuery}
