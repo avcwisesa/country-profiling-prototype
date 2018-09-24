@@ -460,17 +460,25 @@ export default {
       return this.$axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
     },
     fillFacets () {
+      var classFilterQueryString = this.filters.reduce(function (acc, filter) {
+        return acc + ` ?entity wdt:${filter.prop.code} wd:${filter.value.code}.`
+      }, '')
+
       var facetOptionsResults = this.facets.map(async (facet) => {
         var includeSubclass = ''
         if (this.subclass) includeSubclass = '/wdt:P279*'
         var query = `
         SELECT DISTINCT ?facet ?facetLabel ?${facet.code}
+          WHERE {
+            SELECT ?facet ?facetLabel ?${facet.code}
             WHERE {
-            ?entity wdt:P31${includeSubclass} wd:${this.class.code}.
-            ?entity wdt:${facet.code} ?facet.
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en,id,de,it". }
+              ?entity wdt:P31${includeSubclass} wd:${this.class.code}.
+              ${classFilterQueryString}
+              ?entity wdt:${facet.code} ?facet.
+              SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en,id,de,it". }
             }
             LIMIT 10000
+          }
         `
         return this.$axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
       })
