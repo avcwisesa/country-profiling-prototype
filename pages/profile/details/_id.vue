@@ -34,10 +34,74 @@
             :label="'Include subclasses'"
             v-model="subclass"
           ></v-switch>
+          <h3>Filters</h3>
+          <v-card-text v-if="filters.length === 0">No filter</v-card-text>
+          <v-chip v-else v-for="filter in filters" v-bind:key="filter.code" close
+          @input="remove(filters, filter)"
+          >
+            {{filter.prop.name}}: {{filter.value.name}}
+          </v-chip>
+          <v-layout class="mt-2" row wrap>
+            <v-flex xs4 class="mt-3">
+              <v-autocomplete
+                v-model="filterProp" label="Property" :items="suggestedProp" required
+                item-text="name" return-object :search-input.sync="currProp"
+              >
+                <template
+                  slot="item"
+                  slot-scope="data"
+                >
+                  <template v-if="typeof data.item !== 'object'">
+                    <v-list-tile-content v-text="data.item"></v-list-tile-content>
+                  </template>
+                  <template v-else>
+                    <v-list-tile-content>
+                      <v-list-tile-title >{{data.item.name}} ({{data.item.code}})</v-list-tile-title>
+                      <v-list-tile-sub-title>{{data.item.description}}</v-list-tile-sub-title>
+                    </v-list-tile-content>
+                  </template>
+                </template>
+              </v-autocomplete>
+            </v-flex>
+            <v-flex xs4 class="mt-3 mx-3">
+              <v-autocomplete
+                v-model="filterValue" label="Value" :items="suggestedEntity" required
+                item-text="name" return-object :search-input.sync="currValue"
+              >
+                <template
+                  slot="item"
+                  slot-scope="data"
+                >
+                  <template v-if="typeof data.item !== 'object'">
+                    <v-list-tile-content v-text="data.item"></v-list-tile-content>
+                  </template>
+                  <template v-else>
+                    <v-list-tile-content>
+                      <v-list-tile-title >{{data.item.name}} ({{data.item.code}})</v-list-tile-title>
+                      <v-list-tile-sub-title>{{data.item.description}}</v-list-tile-sub-title>
+                    </v-list-tile-content>
+                  </template>
+                </template>
+              </v-autocomplete>
+            </v-flex>
+            <v-flex class="ml-3">
+              <v-btn
+                dark
+                fab
+                top
+                small
+                right
+                color="pink"
+                @click="addFilter()"
+              >
+                <v-icon>add</v-icon>
+              </v-btn>
+            </v-flex>
+          </v-layout>
           <h3 class="mt-3">Facets: </h3>
           <v-combobox
             v-model="facets" label="Edit facets" chips multiple clearable required
-            item-text="label" :items="suggestedEntity" :search-input.sync="currFacet"
+            item-text="label" :items="suggestedProp" :search-input.sync="currFacet"
           >
             <template slot="selection" slot-scope="data">
                 <v-chip
@@ -67,7 +131,7 @@
           <h3>Attributes: </h3>
           <v-combobox
             v-model="attributes" label="Edit attributes" chips multiple clearable required
-            item-text="label" :items="suggestedEntity" :search-input.sync="currAttribute"
+            item-text="label" :items="suggestedProp" :search-input.sync="currAttribute"
           >
             <template slot="selection" slot-scope="data">
                 <v-chip
@@ -118,6 +182,8 @@
                     <h2>Profile name: {{profileName}}</h2>
                     <h2>Class: {{ `${profileClass.name} (${profileClass.code})` }}</h2>
                     <div v-if="subclass">(subclass included)</div>
+                    <h3 class="mt-3">Filters: </h3>
+                    <v-chip v-for="filter in filters" v-bind:key="filter.code">{{ `${filter.prop.name}: ${filter.value.name}` }}</v-chip>
                     <h3 class="mt-3">Facets: </h3>
                     <v-chip v-for="facet in facets" v-bind:key="facet.code">{{ `${facet.name} (${facet.code})` }}</v-chip>
                     <h3>Attributes: </h3>
@@ -201,7 +267,6 @@ import BarChart from '~/components/BarChart.vue'
 export default {
   async fetch ({ store, params }) {
     await store.dispatch('FETCH_PROFILE_BY_ID', params.id)
-    await store.dispatch('FETCH_FACET_OPTIONS')
   },
   components: {
     BarChart
@@ -214,9 +279,14 @@ export default {
       currClass: null,
       currFacet: '',
       currAttribute: '',
+      currProp: '',
+      currValue: '',
       subclass: false,
       attributes: [],
       facets: [],
+      filters: [],
+      filterProp: {},
+      filterValue: {},
       updateDialog: false,
       deleteDialog: false
     }
@@ -226,6 +296,18 @@ export default {
       return {
         name: this.profileName,
         class: JSON.stringify({ code: this.profileClass.code, name: this.profileClass.name }),
+        filters: JSON.stringify(this.filters.map(obj => {
+          return {
+            prop: {
+              name: obj.prop.name,
+              code: obj.prop.code
+            },
+            value: {
+              name: obj.value.name,
+              code: obj.value.code
+            }
+          }
+        })),
         facets: JSON.stringify(this.facets.map(obj => {
           return {
             code: obj.code,
@@ -254,17 +336,34 @@ export default {
         })
       })
       return entities
+    },
+    suggestedProp () {
+      var props = []
+      this.$store.state.suggestedProperty.forEach(element => {
+        props.push({
+          name: element.label,
+          code: element.id,
+          description: element.description
+        })
+      })
+      return props
     }
   },
   watch: {
     currAttribute (query) {
-      this.entitySuggestion('property', query)
+      this.propertySuggestion(query)
     },
     currFacet (query) {
-      this.entitySuggestion('property', query)
+      this.propertySuggestion(query)
     },
     currClass (query) {
-      this.entitySuggestion('item', query)
+      this.entitySuggestion(query)
+    },
+    currProp (query) {
+      this.propertySuggestion(query)
+    },
+    currValue (query) {
+      this.entitySuggestion(query)
     }
   },
   methods: {
@@ -277,12 +376,21 @@ export default {
       await this.$store.dispatch('UPDATE_PROFILE', {id: this.profileID, profile: this.newProfile})
       this.$router.push({'path': '/profile/' + this.profileID})
     },
+    addFilter () {
+      this.filters.push({
+        prop: this.filterProp,
+        value: this.filterValue
+      })
+    },
     remove (data, item) {
       data.splice(data.indexOf(item), 1)
       data = [...data]
     },
-    entitySuggestion (type, query) {
-      this.$store.dispatch('SUGGESTER', { type: type, query: query })
+    entitySuggestion (query) {
+      this.$store.dispatch('SUGGESTER', { type: 'item', query: query })
+    },
+    propertySuggestion (query) {
+      this.$store.dispatch('SUGGESTER', { type: 'property', query: query })
     }
   },
   mounted () {
@@ -291,6 +399,7 @@ export default {
     this.profileClass = this.$store.state.class
     this.attributes = this.$store.state.attributes
     this.facets = this.$store.state.facets
+    this.filters = this.$store.state.filters
   }
 }
 </script>
