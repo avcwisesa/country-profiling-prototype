@@ -186,7 +186,7 @@
         <v-card-title class="headline mt-3"> Completeness table </v-card-title>
           <v-card-text>Completeness details of all entities within the profile</v-card-text>
 
-          <v-expansion-panel popout>
+          <v-expansion-panel popout expand>
             <v-expansion-panel-content class="px-3 pb-3">
               <div slot="header">Profile 1</div>
               <v-card>
