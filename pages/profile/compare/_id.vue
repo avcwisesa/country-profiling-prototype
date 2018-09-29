@@ -12,7 +12,7 @@
             <v-card-text>Amount of entities according to completeness score</v-card-text>
             <BarChart :chart-data="datacollection" :options="chartOptions"/>
           </div>
-          <v-layout class="my-4" v-for="facet in facets" v-bind:key="facet.code" row wrap>
+          <v-layout class="my-4" row wrap>
             <v-flex xs4>
                 <h2>Class Filters</h2>
             </v-flex>

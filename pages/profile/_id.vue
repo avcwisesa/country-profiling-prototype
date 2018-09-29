@@ -14,7 +14,7 @@
             <v-flex xs8>
               <v-layout column>
                 <v-flex class="my-4">
-                  <v-layout v-for="facet in facets" v-bind:key="facet.code" row wrap>
+                  <v-layout row wrap>
                     <v-flex xs6>
                         <v-subheader><h3>Filters</h3></v-subheader>
                     </v-flex>
