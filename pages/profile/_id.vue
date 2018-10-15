@@ -290,18 +290,16 @@ export default {
       }, '')
       var facetValue = this.facetValue
       var facetQuery = this.facets.reduce(function (acc, attr) {
-        if (facetValue[attr.code] === 'any') {
-          return acc.concat({ code: attr.code, value: '?' + facetValue[attr.code] })
-        } else {
+        if (facetValue[attr.code] !== 'any') {
           return acc.concat({ code: attr.code, value: 'wd:' + facetValue[attr.code] })
         }
       }, [])
 
       var facetQueryString = facetQuery.reduce(function (acc, attr) {
-        if (attr.value === 'wd:undefined') {
-          return acc + ` ?class wdt:${attr.code} ?${attr.code}.`
-        } else {
+        if (attr.value !== 'wd:undefined') {
           return acc + ` ?class wdt:${attr.code} ${attr.value}.`
+        } else {
+          return acc + ''
         }
       }, '')
       var includeSubclass = ''
