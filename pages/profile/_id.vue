@@ -292,6 +292,8 @@ export default {
       var facetQuery = this.facets.reduce(function (acc, attr) {
         if (facetValue[attr.code] !== 'any') {
           return acc.concat({ code: attr.code, value: 'wd:' + facetValue[attr.code] })
+        } else {
+          return acc
         }
       }, [])
 
