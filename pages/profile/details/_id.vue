@@ -338,15 +338,7 @@ export default {
       return entities
     },
     suggestedProp () {
-      var props = []
-      this.$store.state.suggestedProperty.forEach(element => {
-        props.push({
-          name: element.label,
-          code: element.id,
-          description: element.description
-        })
-      })
-      return props
+      return this.$store.state.suggestedProperty
     }
   },
   watch: {
@@ -369,7 +361,7 @@ export default {
   methods: {
     async deleteProfile () {
       await this.$store.dispatch('DELETE_PROFILE', { name: this.profileName, id: this.profileID })
-      this.$router.push({'path': '/profile/super/browse'})
+      this.$router.push({'path': '/profile/browse'})
     },
     async updateProfile () {
       console.log(this.newProfile)

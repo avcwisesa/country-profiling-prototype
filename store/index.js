@@ -22,6 +22,7 @@ export const state = () => ({
   profiles: [],
   suggestedEntity: [],
   suggestedProperty: [],
+  suggestedPropertyEdit: [],
   jumbotron: false,
   languages: []
 })
@@ -67,6 +68,10 @@ export const mutations = {
     state.suggestedEntity = suggestion
   },
   SET_SUGGESTED_PROPERTY (state, suggestion) {
+    suggestion.forEach(element => {
+      element.name = element.label
+      element.code = element.id
+    })
     state.suggestedProperty = suggestion
   },
   SET_FACET_OPTIONS (state, {facet, options}) {

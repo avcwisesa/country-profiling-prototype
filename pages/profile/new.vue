@@ -112,7 +112,7 @@
                         </template>
                       </v-autocomplete>
                     </v-flex>
-                    <v-flex class="ml-3">
+                    <v-flex class="xs1 ml-3">
                       <v-btn
                         dark
                         fab
@@ -124,6 +124,16 @@
                       >
                         <v-icon>add</v-icon>
                       </v-btn>
+                    </v-flex>
+                    <v-flex>
+                      <v-tooltip top>
+                        <v-icon large class="mt-4"
+                          slot="activator"
+                          color="orange"
+                          dark
+                        >help_outline</v-icon>
+                        <span>Choose property and value, then click the '+' button</span>
+                      </v-tooltip>
                     </v-flex>
                   </v-layout>
                 </v-flex>
