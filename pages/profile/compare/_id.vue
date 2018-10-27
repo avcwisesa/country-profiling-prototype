@@ -58,7 +58,7 @@
                   </v-progress-circular>
                 </v-flex>
                 <v-flex xs12>
-                  <h3 class="text-xs-center">Total number of entities: {{ countries1.length }}</h3>
+                  <h3 class="text-xs-center">Total number of entities: {{ entities1.length }}</h3>
                 </v-flex>
               </v-layout>
             </v-flex>
@@ -96,7 +96,7 @@
                   </v-progress-circular>
                 </v-flex>
                 <v-flex xs12>
-                  <h3 class="text-xs-center">Total number of entities: {{ countries2.length }}</h3>
+                  <h3 class="text-xs-center">Total number of entities: {{ entities2.length }}</h3>
                 </v-flex>
               </v-layout>
             </v-flex>
@@ -192,7 +192,7 @@
               <v-card>
                 <v-data-table
                   :headers="headers"
-                  :items="countries1"
+                  :items="entities1"
                   hide-actions
                   class="elevation-1"
                 >
@@ -220,7 +220,7 @@
               <v-card>
                 <v-data-table
                   :headers="headers"
-                  :items="countries2"
+                  :items="entities2"
                   hide-actions
                   class="elevation-1"
                 >
@@ -316,7 +316,7 @@ export default {
       return this.facetOptionsData
     },
     attributes () {
-      var entities = JSON.parse(JSON.stringify(this.$store.state.countries1))
+      var entities = JSON.parse(JSON.stringify(this.$store.state.entities1))
       var attributes = JSON.parse(JSON.stringify(this.$store.state.attributes))
       var amount = {}
 
@@ -342,7 +342,7 @@ export default {
       })
     },
     attributes2 () {
-      var entities = JSON.parse(JSON.stringify(this.$store.state.countries2))
+      var entities = JSON.parse(JSON.stringify(this.$store.state.entities2))
       var attributes = JSON.parse(JSON.stringify(this.$store.state.attributes))
       var amount = {}
 
@@ -373,8 +373,8 @@ export default {
       attrs = attrs.map(obj => obj.code + 'Exist')
       return ['classLabel'].concat(attrs)
     },
-    countries1 () {
-      var entities = this.$store.state.countries1
+    entities1 () {
+      var entities = this.$store.state.entities1
       var attributes = this.$store.state.attributes
 
       entities.forEach(function (entity) {
@@ -384,8 +384,8 @@ export default {
 
       return entities
     },
-    countries2 () {
-      var entities = this.$store.state.countries2
+    entities2 () {
+      var entities = this.$store.state.entities2
       var attributes = this.$store.state.attributes
 
       entities.forEach(function (entity) {
@@ -504,8 +504,8 @@ export default {
       })
     },
     processResponse (response, id, barColor, setTable, setScore) {
-      var countries = response.data.results.bindings
-      this.$store.commit(setTable, countries)
+      var entities = response.data.results.bindings
+      this.$store.commit(setTable, entities)
 
       const reducer = function (acc, country) {
         var exist = Object.keys(country).length - 2
@@ -515,7 +515,7 @@ export default {
       var attributes = this.attributes.concat([''])
       var acc = Array.apply(null, Array(attributes.length)).map(Number.prototype.valueOf, 0)
 
-      var chartData = countries.reduce(reducer, acc)
+      var chartData = entities.reduce(reducer, acc)
 
       var score = 0
       var div = 100 / chartData.length
@@ -523,7 +523,7 @@ export default {
         var weight = (i + 1) * div
         score += (weight * val)
       })
-      score /= countries.length
+      score /= entities.length
       this.$store.commit(setScore, parseFloat(score.toFixed(2)))
 
       this.datasets.push({
@@ -538,8 +538,8 @@ export default {
       const response1 = this.postQuery(1)
       const response2 = this.postQuery(2)
       const [data1, data2] = await Promise.all([response1, response2])
-      this.processResponse(data1, 1, this.barColor1, 'SET_COUNTRIES1', 'SET_SCORE1')
-      this.processResponse(data2, 2, this.barcolor2, 'SET_COUNTRIES2', 'SET_SCORE2')
+      this.processResponse(data1, 1, this.barColor1, 'SET_ENTITIES1', 'SET_SCORE1')
+      this.processResponse(data2, 2, this.barcolor2, 'SET_ENTITIES2', 'SET_SCORE2')
       var attributes = this.attributes.concat([''])
       this.datacollection = await {
         labels: attributes.map((_, x) => `${(100 * (x) / this.attributes.length).toFixed(2)}%`),
@@ -547,7 +547,7 @@ export default {
       }
       this.loading = false
 
-      this.warning = (this.countries1.length === 20000 || this.countries2.length === 20000)
+      this.warning = (this.entities1.length === 20000 || this.entities2.length === 20000)
     }
   },
   mounted: async function () {
