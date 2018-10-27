@@ -13,8 +13,8 @@ export const state = () => ({
   score1: 0,
   score2: 0,
   subclass: false,
-  countries1: [],
-  countries2: [],
+  entities1: [],
+  entities2: [],
   properties: [1, 2, 3, 4, 5, 6],
   error: null,
   profileName: '',
@@ -34,11 +34,11 @@ export const mutations = {
   SET_FAILURE (state, error) {
     state.error = error
   },
-  SET_COUNTRIES1 (state, countries) {
-    state.countries1 = countries
+  SET_ENTITIES1 (state, entities) {
+    state.entities1 = entities
   },
-  SET_COUNTRIES2 (state, countries) {
-    state.countries2 = countries
+  SET_ENTITIES2 (state, entities) {
+    state.entities2 = entities
   },
   SET_SCORE1 (state, score) {
     state.score1 = score

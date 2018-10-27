@@ -60,7 +60,7 @@
                   </v-progress-circular>
                 </v-flex>
                 <v-flex xs12>
-                  <h3 class="text-xs-center">Total number of entities: {{ countries.length }}</h3>
+                  <h3 class="text-xs-center">Total number of entities: {{ entities.length }}</h3>
                 </v-flex>
               </v-layout>
             </v-flex>
@@ -135,7 +135,7 @@
         <v-card-text>Completeness details of all entities within the profile</v-card-text>
         <v-data-table
           :headers="headers"
-          :items="countries"
+          :items="entities"
           hide-actions
           class="elevation-1"
           disable-initial-sort
@@ -199,8 +199,8 @@ export default {
     }
   },
   computed: {
-    countries () {
-      var entities = JSON.parse(JSON.stringify(this.$store.state.countries1))
+    entities () {
+      var entities = JSON.parse(JSON.stringify(this.$store.state.entities1))
       var attributes = JSON.parse(JSON.stringify(this.$store.state.attributes))
 
       entities.forEach(function (entity) {
@@ -238,7 +238,7 @@ export default {
       return this.$store.state.facets
     },
     attributes () {
-      var entities = this.$store.state.countries1
+      var entities = this.$store.state.entities1
       var attributes = this.$store.state.attributes
       var amount = {}
 
@@ -328,8 +328,8 @@ export default {
 
       this.$axios.post(process.env.WIKIDATA_SPARQL_ENDPOINT + 'sparql?query=' + encodeURIComponent(query))
         .then((response) => {
-          var countries = response.data.results.bindings
-          this.$store.commit('SET_COUNTRIES1', countries)
+          var entities = response.data.results.bindings
+          this.$store.commit('SET_ENTITIES1', entities)
 
           const reducer = function (acc, country) {
             var exist = Object.keys(country).length - 2
@@ -339,7 +339,7 @@ export default {
           var attributes = this.attributes.concat([''])
           var acc = Array.apply(null, Array(attributes.length)).map(Number.prototype.valueOf, 0)
 
-          var chartData = countries.reduce(reducer, acc)
+          var chartData = entities.reduce(reducer, acc)
 
           var score = 0
           var div = 100 / chartData.length
@@ -348,7 +348,7 @@ export default {
             score += (weight * val)
             console.log(weight, val)
           })
-          score /= countries.length
+          score /= entities.length
           this.$store.commit('SET_SCORE1', parseFloat(score.toFixed(2)))
 
           this.datacollection = {
@@ -363,7 +363,7 @@ export default {
           }
 
           this.loading = false
-          this.warning = (this.countries.length === 20000)
+          this.warning = (this.entities.length === 20000)
         })
         .catch((error) => {
           console.log(error)
